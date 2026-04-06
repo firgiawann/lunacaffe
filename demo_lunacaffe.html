@@ -105,7 +105,7 @@
                     <!-- Search/Filter Mimic -->
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                         <label for="filter-kat" class="sr-only">Filter kategori menu</label>
-                        <select id="filter-kat" aria-label="Filter kategori menu" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A] w-full sm:w-auto" onchange="renderMenu()">
+                        <select id="filter-kat" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A] w-full sm:w-auto" onchange="renderMenu()">
                             <option value="Semua">Semua Kategori</option>
                             <option value="Minuman">🔥 Minuman Kopi</option>
                             <option value="Snack">🥐 Snack/Kue</option>
@@ -113,7 +113,7 @@
                         <div class="flat-card flex items-center px-3 w-full sm:w-auto">
                             <span class="text-gray-400">🔍</span>
                             <label for="search-box" class="sr-only">Cari nama menu</label>
-                            <input type="text" id="search-box" aria-label="Cari nama menu" onkeyup="renderMenu()" placeholder="Cari nama menu..." class="px-2 py-2 outline-none rounded-lg text-sm w-full sm:w-48 font-semibold text-[#2A113A]">
+                            <input type="text" id="search-box" onkeyup="renderMenu()" placeholder="Cari nama menu..." class="px-2 py-2 outline-none rounded-lg text-sm w-full sm:w-48 font-semibold text-[#2A113A]">
                         </div>
                     </div>
                 </div>
