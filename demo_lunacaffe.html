@@ -8,7 +8,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
         
-        * , *::before, *::after { box-sizing: border-box; }
+        *, *::before, *::after { box-sizing: border-box; }
         html, body {
             width: 100%;
             max-width: 100%;
@@ -91,7 +91,7 @@
     <main class="flex-1 relative overflow-x-hidden">
 
         <!-- =================== KIOSK VIEW =================== -->
-        <section id="view-kiosk" class="absolute inset-0 flex flex-col lg:flex-row h-full fade-in overflow-x-hidden">
+        <section id="view-kiosk" class="absolute inset-0 flex flex-col lg:flex-row h-full fade-in">
             
             <!-- Menu Area -->
             <div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto w-full">
@@ -149,7 +149,7 @@
 
 
         <!-- =================== DASHBOARD VIEW =================== -->
-        <section id="view-dashboard" class="absolute inset-0 hidden fade-in flex flex-col lg:flex-row overflow-x-hidden">
+        <section id="view-dashboard" class="absolute inset-0 hidden fade-in flex flex-col lg:flex-row">
             
             <!-- Dashboard Sidebar Mimic -->
             <aside class="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col h-auto lg:h-full shrink-0 shadow-lg z-10">
