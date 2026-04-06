@@ -88,29 +88,29 @@
     </header>
 
     <!-- MAIN AREA -->
-    <main class="flex-1 relative">
+    <main class="flex-1 relative overflow-hidden">
 
         <!-- =================== KIOSK VIEW =================== -->
         <section id="view-kiosk" class="absolute inset-0 flex flex-col lg:flex-row h-full fade-in">
             
             <!-- Menu Area -->
             <div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto w-full">
-                <div class="flex justify-between items-center mb-6">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-6">
                     <div>
                         <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2A113A]">Selamat Datang 👋</h2>
                         <p class="text-gray-500 mt-1">Silakan pilih menu pesanan mandiri Anda.</p>
                     </div>
                     
                     <!-- Search/Filter Mimic -->
-                    <div class="hidden xl:flex gap-2">
-                        <select id="filter-kat" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A]" onchange="renderMenu()">
+                    <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                        <select id="filter-kat" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A] w-full sm:w-auto" onchange="renderMenu()">
                             <option value="Semua">Semua Kategori</option>
                             <option value="Minuman">🔥 Minuman Kopi</option>
                             <option value="Snack">🥐 Snack/Kue</option>
                         </select>
-                        <div class="flat-card flex items-center px-3">
+                        <div class="flat-card flex items-center px-3 w-full sm:w-auto">
                             <span class="text-gray-400">🔍</span>
-                            <input type="text" id="search-box" onkeyup="renderMenu()" placeholder="Cari nama menu..." class="px-2 py-2 outline-none rounded-lg text-sm w-48 font-semibold text-[#2A113A]">
+                            <input type="text" id="search-box" onkeyup="renderMenu()" placeholder="Cari nama menu..." class="px-2 py-2 outline-none rounded-lg text-sm w-full sm:w-48 font-semibold text-[#2A113A]">
                         </div>
                     </div>
                 </div>
