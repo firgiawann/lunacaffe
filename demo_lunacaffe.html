@@ -42,9 +42,35 @@
             transition: all 0.2s;
         }
         .btn-flat:active { transform: scale(0.96); }
+
+        #mobile-warning {
+            display: none;
+        }
+
+        @media (max-width: 1023px) {
+            #desktop-demo {
+                display: none;
+            }
+
+            #mobile-warning {
+                display: flex;
+            }
+        }
     </style>
 </head>
 <body class="h-screen flex flex-col overflow-hidden text-gray-800 relative">
+    <div id="mobile-warning" class="min-h-screen w-full items-center justify-center bg-[#2A113A] px-6 text-center">
+        <div class="max-w-md bg-white rounded-2xl p-6 shadow-2xl border border-yellow-200">
+            <div class="text-3xl mb-3">⚠️</div>
+            <h2 class="text-xl font-extrabold text-[#2A113A] mb-2">Mode Desktop Diperlukan</h2>
+            <p class="text-sm text-gray-600 font-semibold">
+                Demo HTML ini belum mendukung tampilan mobile.
+                Silakan aktifkan mode desktop / buka dari laptop agar layout tidak rusak.
+            </p>
+        </div>
+    </div>
+
+    <div id="desktop-demo" class="contents">
 
     <!-- DISCLAIMER BAR -->
     <div class="bg-yellow-100 text-yellow-800 text-xs md:text-sm px-4 py-2 text-center font-bold border-b border-yellow-200 z-50 shadow-sm flex items-center justify-center gap-2 relative">
@@ -405,5 +431,6 @@
         switchView('kiosk');
 
     </script>
+    </div>
 </body>
 </html>
