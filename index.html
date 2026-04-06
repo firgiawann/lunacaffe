@@ -65,9 +65,10 @@
     <div class="blob blob-3"></div>
 
     <div class="flex h-screen overflow-hidden">
+        <div id="mobile-sidebar-overlay" class="fixed inset-0 bg-black/60 z-20 hidden md:hidden" onclick="toggleMobileSidebar(false)"></div>
         
         <!-- Sidebar Navigation -->
-        <aside class="w-80 glass-panel border-r border-white/10 flex flex-col pt-8 pb-4 shrink-0 shadow-2xl z-10 hidden md:flex">
+        <aside id="sidebar-nav" class="w-80 glass-panel border-r border-white/10 flex flex-col pt-8 pb-4 shrink-0 shadow-2xl z-30 hidden md:flex fixed inset-y-0 left-0 -translate-x-full transition-transform duration-300 md:relative md:translate-x-0">
             <div class="px-8 mb-6 text-center flex flex-col items-center">
                 <div class="text-5xl mb-3 drop-shadow-[0_0_20px_rgba(241,196,15,0.8)]">🌌🌙</div>
                 <h1 class="text-xl font-bold tracking-wider text-brand-gold">LUNACAFFE SYS</h1>
@@ -118,6 +119,12 @@
 
         <!-- Main Content Area -->
         <main class="flex-1 h-screen overflow-y-auto relative scroll-smooth p-6 md:p-12 md:pl-20">
+            <div class="md:hidden mb-4 sticky top-0 z-10">
+                <button onclick="toggleMobileSidebar(true)" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-secondary/70 hover:bg-brand-secondary text-white border border-white/20 shadow-lg">
+                    <span class="text-lg">☰</span>
+                    <span class="text-sm font-semibold">Menu Navigasi</span>
+                </button>
+            </div>
             
             <div class="max-w-4xl mx-auto pb-20">
 
@@ -134,6 +141,7 @@
                             <a href="demo_lunacaffe.html" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold hover:bg-yellow-300 text-brand-dark font-bold rounded-full text-lg shadow-[0_0_20px_rgba(241,196,15,0.4)] hover:shadow-[0_0_30px_rgba(241,196,15,0.6)] transition-all hover:-translate-y-1">
                                 <span class="text-2xl">🎮</span> Coba Demo Web Visual
                             </a>
+                            <div class="text-xs text-yellow-300 mt-2 font-semibold">Untuk pengalaman terbaik, disarankan membuka demo dalam mode desktop.</div>
                             <div class="text-xs text-gray-400 mt-3 font-mono">demo_lunacaffe.html</div>
                         </div>
                     </div>
@@ -675,6 +683,10 @@ public void masukSistem() {
             
             // Scroll to top
             document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+
+            if (window.innerWidth < 768) {
+                toggleMobileSidebar(false);
+            }
         }
 
         function toggleOOP(id, btnElement) {
@@ -692,6 +704,26 @@ public void masukSistem() {
                 icon.innerText = "+";
                 icon.classList.remove('text-rose-400');
                 icon.classList.add('text-brand-gold');
+            }
+        }
+
+        function toggleMobileSidebar(show) {
+            const sidebar = document.getElementById('sidebar-nav');
+            const overlay = document.getElementById('mobile-sidebar-overlay');
+            if (!sidebar || !overlay) return;
+
+            if (show) {
+                sidebar.classList.remove('hidden', '-translate-x-full');
+                sidebar.classList.add('flex', 'translate-x-0');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.remove('translate-x-0');
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+                if (window.innerWidth < 768) {
+                    sidebar.classList.add('hidden');
+                    sidebar.classList.remove('flex');
+                }
             }
         }
     </script>
