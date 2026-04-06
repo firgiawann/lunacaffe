@@ -9,6 +9,7 @@
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
         
         *, *::before, *::after { box-sizing: border-box; }
+        :root { --order-table-min-width: 640px; } /* aligned with sm breakpoint to keep 4 columns readable */
         html, body {
             width: 100%;
             max-width: 100%;
@@ -62,8 +63,7 @@
         }
 
         .responsive-table table {
-            /* 640px keeps 4 table columns readable; below this we allow local horizontal scroll in .responsive-table */
-            min-width: 640px;
+            min-width: var(--order-table-min-width);
         }
     </style>
 </head>
@@ -104,14 +104,14 @@
                     
                     <!-- Search/Filter Mimic -->
                     <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                        <select id="filter-kat" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A] w-full sm:w-auto" onchange="renderMenu()">
+                        <select id="filter-kat" aria-label="Filter kategori menu" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A] w-full sm:w-auto" onchange="renderMenu()">
                             <option value="Semua">Semua Kategori</option>
                             <option value="Minuman">🔥 Minuman Kopi</option>
                             <option value="Snack">🥐 Snack/Kue</option>
                         </select>
                         <div class="flat-card flex items-center px-3 w-full sm:w-auto">
                             <span class="text-gray-400">🔍</span>
-                            <input type="text" id="search-box" onkeyup="renderMenu()" placeholder="Cari nama menu..." class="px-2 py-2 outline-none rounded-lg text-sm w-full sm:w-48 font-semibold text-[#2A113A]">
+                            <input type="text" id="search-box" aria-label="Cari nama menu" onkeyup="renderMenu()" placeholder="Cari nama menu..." class="px-2 py-2 outline-none rounded-lg text-sm w-full sm:w-48 font-semibold text-[#2A113A]">
                         </div>
                     </div>
                 </div>
@@ -122,7 +122,7 @@
             </div>
 
             <!-- Cart Sidebar (Right) -->
-            <div class="w-full lg:w-[32%] xl:w-[26rem] bg-white shadow-2xl border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col z-10 shrink-0 h-full relative">
+            <div class="w-full lg:w-[32%] xl:w-[30%] bg-white shadow-2xl border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col z-10 shrink-0 h-full relative">
                 <div class="p-6 border-b border-gray-100">
                     <h3 class="text-xl font-extrabold text-[#2A113A] flex items-center gap-2">🛒 Keranjang Belanja <span class="bg-[#F1C40F] text-[#2A113A] text-xs px-2 py-1 rounded-full" id="cart-badge">0</span></h3>
                 </div>
@@ -150,7 +150,7 @@
 
 
         <!-- =================== DASHBOARD VIEW =================== -->
-        <section id="view-dashboard" class="absolute inset-0 hidden fade-in flex flex-col lg:flex-row">
+        <section id="view-dashboard" class="absolute inset-0 hidden fade-in flex flex-col lg:flex-row"> <!-- lg breakpoint stays in sync with sidebar width switch -->
             
             <!-- Dashboard Sidebar Mimic -->
             <aside class="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col h-auto lg:h-full shrink-0 shadow-lg z-10">
