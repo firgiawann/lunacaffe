@@ -13,7 +13,7 @@
 1. **Kiosk Area** (*Self-Service*) di layar depan bagi pelanggan untuk memesan secara mandiri.
 2. **Dashboard Internal** di balik meja khusus para pegawai (Kasir & Admin).
 
-> 💡 **Dokumentasi Lengkap:** Untuk panduan penggunaan sistem yang interaktif dan detail, silakan buka file **[`Panduan_PBO_Lunacaffe.html`](Panduan_PBO_Lunacaffe.html)** melalui *browser* Anda!
+> 💡 **Dokumentasi Lengkap:** Untuk panduan penggunaan sistem yang interaktif dan detail, silakan buka **[`index.html`](https://firgiawann.github.io/lunacaffe)** melalui *browser* Anda!
 
 ---
 
