@@ -8,6 +8,18 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap');
         
+        * , *::before, *::after { box-sizing: border-box; }
+        html, body {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
+        img, iframe, video, canvas, svg {
+            max-width: 100%;
+            height: auto;
+        }
+
         body { 
             font-family: 'Nunito', sans-serif; 
             background: #F5F2EE; /* FlatLaf soft cream background mimic */
@@ -43,35 +55,18 @@
         }
         .btn-flat:active { transform: scale(0.96); }
 
-        #mobile-warning {
-            display: none;
+        .responsive-table {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* < 1024px (Tailwind lg breakpoint) is treated as mobile/tablet for this demo */
-        @media (max-width: 1023px) {
-            #desktop-demo {
-                display: none;
-            }
-
-            #mobile-warning {
-                display: flex;
-            }
+        .responsive-table table {
+            min-width: 640px;
         }
     </style>
 </head>
-<body class="h-screen flex flex-col overflow-hidden text-gray-800 relative">
-    <div id="mobile-warning" class="min-h-screen w-full items-center justify-center bg-[#2A113A] px-6 text-center">
-        <div class="max-w-md bg-white rounded-2xl p-6 shadow-2xl border border-yellow-200">
-            <div class="text-3xl mb-3">⚠️</div>
-            <h2 class="text-xl font-extrabold text-[#2A113A] mb-2">Mode Desktop Diperlukan</h2>
-            <p class="text-sm text-gray-600 font-semibold">
-                Demo HTML ini belum mendukung tampilan mobile.
-                Silakan aktifkan mode desktop / buka dari laptop agar layout tidak rusak.
-            </p>
-        </div>
-    </div>
-
-    <div id="desktop-demo">
+<body class="min-h-screen flex flex-col overflow-x-hidden text-gray-800 relative">
 
     <!-- DISCLAIMER BAR -->
     <div class="bg-yellow-100 text-yellow-800 text-xs md:text-sm px-4 py-2 text-center font-bold border-b border-yellow-200 z-50 shadow-sm flex items-center justify-center gap-2 relative">
@@ -81,33 +76,33 @@
     </div>
 
     <!-- Top Navigation Window Mockup -->
-    <header class="bg-[#2A113A] text-white p-4 shadow-md flex justify-between items-center z-10">
+    <header class="bg-[#2A113A] text-white p-3 sm:p-4 shadow-md flex flex-wrap justify-between items-center gap-3 z-10">
         <div class="flex items-center gap-3">
             <div class="text-2xl drop-shadow-md">🌌🌙</div>
-            <h1 class="text-xl font-extrabold tracking-wide text-[#F1C40F]">LUNACAFFE <span class="text-sm font-normal text-indigo-200">| JAVA POS PROTOTYPE</span></h1>
+            <h1 class="text-base sm:text-lg lg:text-xl font-extrabold tracking-wide text-[#F1C40F] leading-tight">LUNACAFFE <span class="text-xs sm:text-sm font-normal text-indigo-200">| JAVA POS PROTOTYPE</span></h1>
         </div>
-        <div class="flex gap-2">
-            <button onclick="switchView('kiosk')" id="btn-kiosk" class="btn-flat px-4 py-2 bg-[#F1C40F] hover:bg-[#D4AC0D] text-[#2A113A] shadow-inner">Layar Pelanggan Kiosk</button>
-            <button onclick="switchView('dashboard')" id="btn-dashboard" class="btn-flat px-4 py-2 bg-[#3F1A57] hover:bg-[#5D2E61] text-indigo-100 border border-[#5D2E61]">Layar Admin/Kasir</button>
+        <div class="flex flex-wrap justify-end gap-2">
+            <button onclick="switchView('kiosk')" id="btn-kiosk" class="btn-flat px-3 sm:px-4 py-2 bg-[#F1C40F] hover:bg-[#D4AC0D] text-[#2A113A] shadow-inner text-xs sm:text-sm">Layar Pelanggan Kiosk</button>
+            <button onclick="switchView('dashboard')" id="btn-dashboard" class="btn-flat px-3 sm:px-4 py-2 bg-[#3F1A57] hover:bg-[#5D2E61] text-indigo-100 border border-[#5D2E61] text-xs sm:text-sm">Layar Admin/Kasir</button>
         </div>
     </header>
 
     <!-- MAIN AREA -->
-    <main class="flex-1 relative overflow-hidden">
+    <main class="flex-1 relative overflow-x-hidden">
 
         <!-- =================== KIOSK VIEW =================== -->
-        <section id="view-kiosk" class="absolute inset-0 flex flex-col md:flex-row h-full fade-in">
+        <section id="view-kiosk" class="absolute inset-0 flex flex-col lg:flex-row h-full fade-in overflow-x-hidden">
             
             <!-- Menu Area -->
-            <div class="flex-1 p-6 md:p-8 overflow-y-auto w-full">
+            <div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto w-full">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h2 class="text-3xl font-extrabold text-[#2A113A]">Selamat Datang 👋</h2>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2A113A]">Selamat Datang 👋</h2>
                         <p class="text-gray-500 mt-1">Silakan pilih menu pesanan mandiri Anda.</p>
                     </div>
                     
                     <!-- Search/Filter Mimic -->
-                    <div class="flex gap-2 hidden md:flex">
+                    <div class="hidden xl:flex gap-2">
                         <select id="filter-kat" class="flat-card px-4 py-2 outline-none text-sm font-bold text-[#2A113A]" onchange="renderMenu()">
                             <option value="Semua">Semua Kategori</option>
                             <option value="Minuman">🔥 Minuman Kopi</option>
@@ -120,13 +115,13 @@
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5" id="kiosk-menu-container">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-5" id="kiosk-menu-container">
                     <!-- Javascript will inject cards here -->
                 </div>
             </div>
 
             <!-- Cart Sidebar (Right) -->
-            <div class="w-full md:w-[26rem] bg-white shadow-2xl border-l border-gray-200 flex flex-col z-10 shrink-0 h-full relative">
+            <div class="w-full lg:w-[26rem] bg-white shadow-2xl border-t lg:border-t-0 lg:border-l border-gray-200 flex flex-col z-10 shrink-0 h-full relative">
                 <div class="p-6 border-b border-gray-100">
                     <h3 class="text-xl font-extrabold text-[#2A113A] flex items-center gap-2">🛒 Keranjang Belanja <span class="bg-[#F1C40F] text-[#2A113A] text-xs px-2 py-1 rounded-full" id="cart-badge">0</span></h3>
                 </div>
@@ -154,10 +149,10 @@
 
 
         <!-- =================== DASHBOARD VIEW =================== -->
-        <section id="view-dashboard" class="absolute inset-0 hidden fade-in flex">
+        <section id="view-dashboard" class="absolute inset-0 hidden fade-in flex flex-col lg:flex-row overflow-x-hidden">
             
             <!-- Dashboard Sidebar Mimic -->
-            <aside class="w-64 bg-white border-r border-gray-200 flex flex-col h-full shrink-0 shadow-lg z-10">
+            <aside class="w-full lg:w-64 bg-white border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col h-auto lg:h-full shrink-0 shadow-lg z-10">
                 <div class="p-6 border-b border-gray-100 text-center flex flex-col items-center">
                     <div class="w-16 h-16 bg-[#2A113A] rounded-full flex items-center justify-center text-3xl mb-3 shadow-md">🧑‍🍳</div>
                     <p class="font-extrabold text-[#2A113A] text-lg">Panel Pegawai</p>
@@ -181,16 +176,17 @@
             </aside>
 
             <!-- Dashboard Content -->
-            <div class="flex-1 p-8 overflow-y-auto bg-[#F5F2EE]">
+            <div class="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto bg-[#F5F2EE]">
                 <div class="flex justify-between items-center mb-6">
                     <div>
-                        <h2 class="text-3xl font-extrabold text-[#2A113A]">Monitor Pelayanan Resi</h2>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#2A113A]">Monitor Pelayanan Resi</h2>
                         <p class="text-gray-500 text-sm mt-1">Mengawasi masuknya order secara real-time dari mesin depan.</p>
                     </div>
                     <button class="btn-flat px-4 py-2 bg-white text-[#2A113A] border border-gray-200 shadow-sm hover:bg-gray-50">🔄 Reload Tabel</button>
                 </div>
 
                 <div class="flat-card overflow-hidden">
+                    <div class="responsive-table">
                     <table class="w-full text-left" id="order-table">
                         <thead class="bg-[#2A113A] border-b border-gray-100">
                             <tr>
@@ -212,6 +208,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    </div>
                 </div>
             </div>
 
@@ -432,6 +429,5 @@
         switchView('kiosk');
 
     </script>
-    </div>
 </body>
 </html>
