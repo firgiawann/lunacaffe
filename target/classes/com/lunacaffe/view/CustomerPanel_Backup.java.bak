@@ -1,0 +1,425 @@
+package com.lunacaffe.view;
+
+import com.lunacaffe.dao.MenuDAO;
+import com.lunacaffe.dao.OrderDAO;
+import com.lunacaffe.model.DetailPesanan;
+import com.lunacaffe.model.Menu;
+import com.lunacaffe.model.Pesanan;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+public class CustomerPanel_Backup extends JPanel {
+
+    private JPanel productsGrid;
+    private JPanel cartItemsArea;
+    private JLabel lblTotal;
+    private JButton btnCheckout;
+    private JButton btnSelesaiSesi;
+    
+    private Pesanan currentPesanan;
+    private boolean isFinishedMode = false; 
+
+    public CustomerPanel_Backup() {
+        setLayout(new BorderLayout(20, 20));
+        setBackground(MainFrame.COLOR_BACKGROUND);
+        setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        initUI();
+        initNewPesanan();
+    }
+
+    private void initNewPesanan() {
+        isFinishedMode = false;
+        currentPesanan = new Pesanan("TEMP", "Guest", "");
+        
+        if (btnCheckout != null && btnSelesaiSesi != null) {
+            btnCheckout.setVisible(true);
+            btnSelesaiSesi.setVisible(false);
+        }
+        refreshCartUI();
+    }
+
+    private void initUI() {
+        JPanel catalogPanel = new JPanel(new BorderLayout(0, 15));
+        catalogPanel.setBackground(MainFrame.COLOR_BACKGROUND);
+
+        JPanel catalogHeader = new JPanel(new BorderLayout());
+        catalogHeader.setBackground(MainFrame.COLOR_BACKGROUND);
+        
+        JLabel lblKatalog = new JLabel("Katalog Lunacaffe");
+        lblKatalog.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblKatalog.setForeground(MainFrame.COLOR_PRIMARY);
+
+        JPanel catalogTopArea = new JPanel(new FlowLayout(FlowLayout.RIGHT, 0, 0));
+        catalogTopArea.setBackground(MainFrame.COLOR_BACKGROUND);
+
+        catalogHeader.add(lblKatalog, BorderLayout.WEST);
+        catalogHeader.add(catalogTopArea, BorderLayout.EAST);
+
+        JPanel categoryPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        categoryPanel.setBackground(MainFrame.COLOR_BACKGROUND);
+        String[] categories = {"Semua", "Hot Drink", "Cold Drink", "Coffee", "Non-Coffee", "Snack", "Bread"};
+        for (int i = 0; i < categories.length; i++) {
+            JButton btnCat = new JButton(categories[i]);
+            btnCat.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+            btnCat.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            if (i == 0) {
+                btnCat.setBackground(MainFrame.COLOR_PRIMARY);
+                btnCat.setForeground(Color.WHITE);
+            } else {
+                btnCat.setBackground(Color.WHITE);
+                btnCat.setForeground(MainFrame.COLOR_PRIMARY);
+            }
+            categoryPanel.add(btnCat);
+        }
+
+        JPanel topCatalogPanel = new JPanel(new BorderLayout(0, 10));
+        topCatalogPanel.setBackground(MainFrame.COLOR_BACKGROUND);
+        topCatalogPanel.add(catalogHeader, BorderLayout.NORTH);
+        topCatalogPanel.add(categoryPanel, BorderLayout.CENTER);
+        
+        catalogPanel.add(topCatalogPanel, BorderLayout.NORTH);
+
+        productsGrid = new JPanel(new GridLayout(0, 3, 15, 15));
+        productsGrid.setBackground(MainFrame.COLOR_BACKGROUND);
+        
+        loadMenusFromDB();
+
+        JScrollPane scrollPane = new JScrollPane(productsGrid);
+        scrollPane.setBorder(null);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        catalogPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Sidebar Cart
+        JPanel cartPanel = new JPanel(new BorderLayout(0, 15));
+        cartPanel.setPreferredSize(new Dimension(280, 0));
+        cartPanel.setBackground(Color.WHITE);
+        cartPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.decode("#E8DECB"), 1, true),
+            new EmptyBorder(15, 15, 15, 15)
+        ));
+
+        JLabel lblKeranjang = new JLabel("<html><b>Keranjang<br>Pesanan</b></html>");
+        lblKeranjang.setFont(new Font("Segoe UI", Font.PLAIN, 18));
+        lblKeranjang.setForeground(MainFrame.COLOR_PRIMARY);
+        cartPanel.add(lblKeranjang, BorderLayout.NORTH);
+
+        cartItemsArea = new JPanel();
+        cartItemsArea.setLayout(new BoxLayout(cartItemsArea, BoxLayout.Y_AXIS));
+        cartItemsArea.setBackground(Color.WHITE);
+        
+        JScrollPane cartScroll = new JScrollPane(cartItemsArea);
+        cartScroll.setBorder(null);
+        cartPanel.add(cartScroll, BorderLayout.CENTER);
+
+        JPanel cartBottom = new JPanel(new GridLayout(2, 1, 0, 10));
+        cartBottom.setBackground(Color.WHITE);
+
+        JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        totalPanel.setBackground(Color.decode("#F1EFE7"));
+        totalPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
+        lblTotal = new JLabel("<html><center>Total: <b>Rp 0.0</b></center></html>");
+        lblTotal.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+        totalPanel.add(lblTotal);
+
+        JPanel actionsPanel = new JPanel(new CardLayout());
+        
+        btnCheckout = new JButton("Checkout Sekarang");
+        btnCheckout.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCheckout.setBackground(MainFrame.COLOR_SECONDARY);
+        btnCheckout.setForeground(Color.WHITE);
+        btnCheckout.setPreferredSize(new Dimension(0, 45));
+        btnCheckout.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnCheckout.addActionListener(e -> processCheckout());
+
+        btnSelesaiSesi = new JButton("Sesi Selanjutnya");
+        btnSelesaiSesi.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnSelesaiSesi.setBackground(MainFrame.COLOR_PRIMARY);
+        btnSelesaiSesi.setForeground(Color.WHITE);
+        btnSelesaiSesi.setPreferredSize(new Dimension(0, 45));
+        btnSelesaiSesi.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btnSelesaiSesi.addActionListener(e -> initNewPesanan());
+
+        actionsPanel.add(btnCheckout, "CHECKOUT");
+        actionsPanel.add(btnSelesaiSesi, "SELESAI");
+        ((CardLayout) actionsPanel.getLayout()).show(actionsPanel, "CHECKOUT");
+
+        cartBottom.add(totalPanel);
+        cartBottom.add(actionsPanel);
+
+        cartPanel.add(cartBottom, BorderLayout.SOUTH);
+
+        add(catalogPanel, BorderLayout.CENTER);
+        add(cartPanel, BorderLayout.EAST);
+    }
+
+    private void loadMenusFromDB() {
+        MenuDAO mnDao = new MenuDAO();
+        List<Menu> menus = mnDao.getAllMenus();
+        for (Menu m : menus) {
+            String badgeStr = m.isNew() ? "NEW" : (m.isBestseller() ? "BEST" : "");
+            productsGrid.add(createProductCard(badgeStr, m));
+        }
+    }
+
+    private JPanel createProductCard(String badge, Menu menu) {
+        JPanel card = new JPanel(new BorderLayout());
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.decode("#E8DECB"), 1, true),
+            new EmptyBorder(10, 10, 10, 10)
+        ));
+
+        // Area gambar override dgn Graphics2D
+        JPanel imgContainer = new JPanel(new BorderLayout()) {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g.create();
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                g2.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+                
+                String category = menu.getKategori();
+                Color c1, c2;
+                if (category.toLowerCase().contains("coffee") || category.toLowerCase().contains("hot")) {
+                    c1 = Color.decode("#EAD6C0"); c2 = Color.decode("#FFF0E0");
+                } else if (category.toLowerCase().contains("cold")) {
+                    c1 = Color.decode("#C0DEEA"); c2 = Color.decode("#E0F4FF");
+                } else if (category.toLowerCase().contains("bread") || category.toLowerCase().contains("snack")) {
+                    c1 = Color.decode("#EADEC0"); c2 = Color.decode("#FFF6E0");
+                } else {
+                    c1 = Color.decode("#D3EAC0"); c2 = Color.decode("#E9FFE0");
+                }
+                
+                GradientPaint gp = new GradientPaint(0, 0, c2, getWidth(), getHeight(), c1);
+                g2.setPaint(gp);
+                g2.fillRoundRect(0, 0, getWidth(), getHeight(), 12, 12);
+
+                g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 46));
+                FontMetrics fm = g2.getFontMetrics();
+                
+                String iconEmoji = menu.getImagePath();
+                String textToDraw = (iconEmoji != null && !iconEmoji.isEmpty()) ? iconEmoji : "🍽️"; 
+                
+                int textX = (getWidth() - fm.stringWidth(textToDraw)) / 2;
+                int textY = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent() + 5;
+                
+                g2.drawString(textToDraw, textX, textY);
+                g2.dispose();
+            }
+        };
+        imgContainer.setPreferredSize(new Dimension(150, 120));
+        imgContainer.setOpaque(false);
+
+        if (!badge.isEmpty()) {
+            JLabel lblBadge = new JLabel(" " + badge + " ");
+            lblBadge.setOpaque(true);
+            lblBadge.setBackground(badge.equals("NEW") ? Color.decode("#FFD700") : Color.decode("#FF6B6B"));
+            lblBadge.setForeground(badge.equals("NEW") ? Color.BLACK : Color.WHITE);
+            lblBadge.setFont(new Font("Segoe UI", Font.BOLD, 10));
+            
+            JPanel badgePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+            badgePanel.setOpaque(false);
+            badgePanel.add(lblBadge);
+            imgContainer.add(badgePanel, BorderLayout.NORTH);
+        }
+
+        JPanel infoPanel = new JPanel(new GridLayout(2, 1, 0, 5));
+        infoPanel.setBackground(Color.WHITE);
+        infoPanel.setBorder(new EmptyBorder(10, 0, 10, 0));
+        
+        JLabel lblTitle = new JLabel("<html><body style='width: 120px'>" + menu.getNamaMenu() + "</body></html>");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        lblTitle.setForeground(MainFrame.COLOR_PRIMARY);
+
+        JLabel lblPrice = new JLabel("Rp " + menu.getHarga() + " (Stok: " + menu.getStok() + ")");
+        lblPrice.setFont(new Font("Segoe UI", Font.PLAIN, 11));
+        lblPrice.setForeground(Color.DARK_GRAY);
+
+        infoPanel.add(lblTitle);
+        infoPanel.add(lblPrice);
+
+        JButton btnAdd = new JButton("Tambah");
+        btnAdd.setBackground(Color.decode("#3F1F4E"));
+        btnAdd.setForeground(Color.WHITE);
+        btnAdd.setFocusPainted(false);
+        btnAdd.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        btnAdd.addActionListener(e -> addItemToCart(menu));
+
+        card.add(imgContainer, BorderLayout.NORTH);
+        card.add(infoPanel, BorderLayout.CENTER);
+        card.add(btnAdd, BorderLayout.SOUTH);
+
+        return card;
+    }
+    
+    private void addItemToCart(Menu menu) {
+        if (isFinishedMode) return; 
+        
+        if (menu.getStok() <= 0) {
+            JOptionPane.showMessageDialog(this, "Stok produk ini sedang habis!", "Maaf", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        DetailPesanan exists = currentPesanan.getItems().stream()
+                .filter(d -> d.getMenu().getIdMenu().equals(menu.getIdMenu()))
+                .findFirst().orElse(null);
+
+        if (exists != null) {
+            if (exists.getQty() >= menu.getStok()) {
+                JOptionPane.showMessageDialog(this, "Maksimal stok tercapai!", "Peringatan", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+            exists.setQty(exists.getQty() + 1);
+        } else {
+            currentPesanan.addItem(new DetailPesanan(menu, 1));
+        }
+        
+        currentPesanan.setTotalHarga(currentPesanan.hitungTotal());
+        refreshCartUI();
+    }
+    
+    private void refreshCartUI() {
+        cartItemsArea.removeAll();
+        if (currentPesanan.getItems().isEmpty()) {
+            JLabel lblKosong = new JLabel("Kosong", SwingConstants.CENTER);
+            lblKosong.setForeground(Color.GRAY);
+            lblKosong.setAlignmentX(Component.CENTER_ALIGNMENT);
+            cartItemsArea.add(Box.createRigidArea(new Dimension(0, 50)));
+            cartItemsArea.add(lblKosong);
+            
+            if (btnCheckout != null && btnSelesaiSesi != null) {
+                btnCheckout.getParent().invalidate();
+                ((CardLayout) btnCheckout.getParent().getLayout()).show(btnCheckout.getParent(), "CHECKOUT");
+            }
+        } else {
+            for (DetailPesanan item : currentPesanan.getItems()) {
+                JPanel row = new JPanel(new BorderLayout());
+                row.setOpaque(false);
+                row.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.decode("#F1EFE7")));
+                row.setMaximumSize(new Dimension(250, 60));
+
+                JLabel lblName = new JLabel("<html><b>" + item.getMenu().getNamaMenu() + "</b><br><span style='color:gray;'>x" + item.getQty() + " - Rp " + item.getSubtotal() + "</span></html>");
+                lblName.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+                row.add(lblName, BorderLayout.CENTER);
+
+                if (!isFinishedMode) {
+                    JButton btnDel = new JButton("X");
+                    btnDel.setMargin(new Insets(2, 5, 2, 5));
+                    btnDel.setBackground(Color.decode("#FFEEEE"));
+                    btnDel.setForeground(Color.RED);
+                    btnDel.setFocusPainted(false);
+                    btnDel.addActionListener(e -> {
+                        currentPesanan.getItems().remove(item);
+                        currentPesanan.setTotalHarga(currentPesanan.hitungTotal());
+                        refreshCartUI();
+                    });
+                    row.add(btnDel, BorderLayout.EAST);
+                }
+                
+                cartItemsArea.add(row);
+            }
+        }
+        
+        lblTotal.setText("<html><center>Total: <b>Rp " + currentPesanan.getTotalHarga() + "</b></center></html>");
+        cartItemsArea.revalidate();
+        cartItemsArea.repaint();
+    }
+    
+    private void processCheckout() {
+        if (currentPesanan.getItems().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Silakan pilih produk ke keranjang terlebih dahulu!", "Keranjang Kosong", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        String namaPelanggan = JOptionPane.showInputDialog(this, "Masukkan Nama Anda:", "Informasi Checkout", JOptionPane.QUESTION_MESSAGE);
+        
+        if (namaPelanggan != null && !namaPelanggan.trim().isEmpty()) {
+            currentPesanan.setNamaPelanggan(namaPelanggan);
+            
+            OrderDAO orderDAO = new OrderDAO();
+            
+            String realId = orderDAO.getNextOrderNumber();
+            currentPesanan.setIdPesanan(realId);
+            
+            boolean success = orderDAO.createOrder(currentPesanan);
+            
+            if (success) {
+                showReceiptDialog(currentPesanan);
+                
+                productsGrid.removeAll();
+                loadMenusFromDB();
+                productsGrid.revalidate();
+                productsGrid.repaint();
+                
+                isFinishedMode = true;
+                refreshCartUI();
+                
+                ((CardLayout) btnCheckout.getParent().getLayout()).show(btnCheckout.getParent(), "SELESAI");
+
+            } else {
+                JOptionPane.showMessageDialog(this, "Terjadi kesalahan saat memproses Order di Database.", "Gagal Checkout", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+    
+    private void showReceiptDialog(Pesanan p) {
+        JDialog receiptDialog = new JDialog((Frame) SwingUtilities.getWindowAncestor(this), "Cetak Struk", true);
+        receiptDialog.setSize(350, 500);
+        receiptDialog.setLocationRelativeTo(this);
+        
+        JTextPane txtReceipt = new JTextPane();
+        txtReceipt.setContentType("text/html");
+        txtReceipt.setEditable(false);
+        txtReceipt.setBackground(Color.decode("#FFFAFA")); 
+        
+        StringBuilder b = new StringBuilder();
+        b.append("<div style='font-family: monospace; padding: 15px;'>");
+        b.append("<h2 style='text-align:center; color:#2A113A; margin:0;'>LUNACAFFE POS</h2>");
+        b.append("<p style='text-align:center; margin:0; color:#555;'>Struk Pembayaran Digital</p>");
+        b.append("<hr style='border:1px dashed #CCC'>");
+        b.append("<b>ID Pesanan :</b> ").append(p.getIdPesanan()).append("<br>");
+        b.append("<b>Waktu &nbsp;&nbsp;&nbsp;:</b> ").append(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(new Date())).append("<br>");
+        b.append("<b>Pelanggan&nbsp;&nbsp;:</b> ").append(p.getNamaPelanggan()).append("<br>");
+        b.append("<hr style='border:1px dashed #CCC'>");
+        
+        b.append("<table width='100%' style='font-size:12px'>");
+        for (DetailPesanan item : p.getItems()) {
+            b.append("<tr>");
+            b.append("<td width='60%'>").append(item.getMenu().getNamaMenu()).append("</td>");
+            b.append("<td width='10%'>x").append(item.getQty()).append("</td>");
+            b.append("<td width='30%' align='right'>").append(item.getSubtotal()).append("</td>");
+            b.append("</tr>");
+        }
+        b.append("</table>");
+        
+        b.append("<hr style='border:1px solid #CCC'>");
+        b.append("<table width='100%'>");
+        b.append("<tr><td><b>TOTAL BAYAR :</b></td><td align='right'><b>Rp ").append(p.getTotalHarga()).append("</b></td></tr>");
+        b.append("</table>");
+        b.append("<p style='text-align:center; margin-top:20px;'><img src='https://upload.wikimedia.org/wikipedia/commons/d/d0/QR_code_for_mobile_English_Wikipedia.svg' width='80' height='80'></p>");
+        b.append("<p style='text-align:center; font-size:10px;'>Mohon tunjukkan layar ini ke kasir<br>Terima kasih telah berkunjung!</p>");
+        b.append("</div>");
+        
+        txtReceipt.setText(b.toString());
+        
+        JButton btnTutup = new JButton("Tutup & Simpan");
+        btnTutup.setBackground(MainFrame.COLOR_SECONDARY);
+        btnTutup.setForeground(Color.WHITE);
+        btnTutup.addActionListener(e -> receiptDialog.dispose());
+        
+        receiptDialog.setLayout(new BorderLayout());
+        receiptDialog.add(new JScrollPane(txtReceipt), BorderLayout.CENTER);
+        receiptDialog.add(btnTutup, BorderLayout.SOUTH);
+        receiptDialog.setVisible(true);
+    }
+}

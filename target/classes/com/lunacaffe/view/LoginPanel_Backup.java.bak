@@ -1,0 +1,82 @@
+package com.lunacaffe.view;
+
+import com.lunacaffe.dao.UserDAO;
+import com.lunacaffe.model.Pegawai;
+import com.lunacaffe.util.SessionManager;
+
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+
+public class LoginPanel_Backup extends JPanel {
+    private MainFrame mainFrame;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+
+    public LoginPanel_Backup(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+        setLayout(new GridBagLayout());
+        setBackground(MainFrame.COLOR_BACKGROUND);
+        initUI();
+    }
+
+    private void initUI() {
+        JPanel cardPanel = new JPanel();
+        cardPanel.setLayout(new BoxLayout(cardPanel, BoxLayout.Y_AXIS));
+        cardPanel.setBackground(Color.WHITE);
+        cardPanel.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(Color.decode("#E8DECB"), 1, true),
+            new EmptyBorder(30, 40, 30, 40)
+        ));
+
+        JLabel lblTitle = new JLabel("Login Pegawai");
+        lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        lblTitle.setForeground(MainFrame.COLOR_PRIMARY);
+        lblTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JPanel fieldsPanel = new JPanel(new GridLayout(4, 1, 0, 5));
+        fieldsPanel.setBackground(Color.WHITE);
+        
+        fieldsPanel.add(new JLabel("Username:"));
+        txtUsername = new JTextField(15);
+        fieldsPanel.add(txtUsername);
+        
+        fieldsPanel.add(new JLabel("Password:"));
+        txtPassword = new JPasswordField(15);
+        fieldsPanel.add(txtPassword);
+
+        JButton btnLogin = new JButton("Masuk Sistem");
+        btnLogin.setBackground(MainFrame.COLOR_SECONDARY);
+        btnLogin.setForeground(Color.WHITE);
+        btnLogin.setFocusPainted(false);
+        btnLogin.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        btnLogin.addActionListener(e -> attemptLogin());
+
+        cardPanel.add(lblTitle);
+        cardPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        cardPanel.add(fieldsPanel);
+        cardPanel.add(Box.createRigidArea(new Dimension(0, 20)));
+        cardPanel.add(btnLogin);
+
+        add(cardPanel);
+    }
+
+    private void attemptLogin() {
+        String user = txtUsername.getText();
+        String pass = new String(txtPassword.getPassword());
+
+        UserDAO dao = new UserDAO();
+        Pegawai p = dao.getUserByUsername(user);
+        
+        if (p != null && p.verifikasiLogin(pass)) {
+            SessionManager.setCurrentUser(p);
+            JOptionPane.showMessageDialog(this, "Login Berhasil!\nSelamat Bertugas, " + p.getNama());
+            txtUsername.setText("");
+            txtPassword.setText("");
+            mainFrame.showDashboard();
+        } else {
+            JOptionPane.showMessageDialog(this, "Username atau Password salah!", "Login Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+}
