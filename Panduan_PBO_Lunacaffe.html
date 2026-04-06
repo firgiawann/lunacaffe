@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Dokumentasi: Lunacaffe POS</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#1E0E2C', // Deep purple night sky
+                            primary: '#2A113A', // Primary App Color
+                            secondary: '#5D2E61', // Lighter purple
+                            gold: '#F1C40F', // Crescent moon 
+                            cream: '#FCFAF8', // App Background
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; background: #11081A; color: white; overflow-x: hidden; }
+        .glass-panel {
+            background: rgba(42, 17, 58, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .code-block { font-family: 'JetBrains Mono', monospace; }
+        
+        /* Hide all sections by default */
+        .tab-content { display: none; margin-top: 20px; animation: fadeIn 0.5s ease-out forwards; }
+        .tab-content.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Blob Background */
+        .blob { position: fixed; filter: blur(100px); z-index: -1; opacity: 0.4; }
+        .blob-1 { top: -10%; left: -10%; width: 500px; height: 500px; background: #5D2E61; border-radius: 50%; }
+        .blob-2 { bottom: -20%; right: -10%; width: 700px; height: 700px; background: #1E0E2C; border-radius: 50%; }
+        .blob-3 { top: 30%; left: 70%; width: 400px; height: 400px; background: #F1C40F; border-radius: 50%; opacity: 0.15; }
+        
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.4); }
+    </style>
+</head>
+<body class="min-h-screen text-gray-200">
+
+    <!-- Ambient Background -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-80 glass-panel border-r border-white/10 flex flex-col pt-8 pb-4 shrink-0 shadow-2xl z-10 hidden md:flex">
+            <div class="px-8 mb-6 text-center flex flex-col items-center">
+                <div class="text-5xl mb-3 drop-shadow-[0_0_20px_rgba(241,196,15,0.8)]">🌌🌙</div>
+                <h1 class="text-xl font-bold tracking-wider text-brand-gold">LUNACAFFE SYS</h1>
+                <p class="text-[10px] text-gray-400 mt-1 uppercase tracking-widest font-mono">Documentation Module</p>
+            </div>
+            
+            <nav class="flex-1 flex flex-col gap-1.5 px-3 overflow-y-auto mt-4">
+                <button onclick="switchTab('tab-intro')" id="btn-tab-intro" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium bg-brand-secondary/60 border-white/20 text-white shadow-lg text-sm">
+                    👋 Tim Anggota (Kel. 3)
+                </button>
+                
+                <button onclick="switchTab('tab-questions')" id="btn-tab-questions" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    ❓ Analisis Pertanyaan PBO
+                </button>
+                
+                <button onclick="switchTab('tab-mapping')" id="btn-tab-mapping" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    🧩 Mapping Fitur
+                </button>
+
+                <button onclick="switchTab('tab-alur')" id="btn-tab-alur" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    🔄 Alur Kerja Pelanggan
+                </button>
+                
+                <button onclick="switchTab('tab-mvc')" id="btn-tab-mvc" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    🏗️ Arsitektur MVC & DB Schema
+                </button>
+
+                <button onclick="switchTab('tab-rbac')" id="btn-tab-rbac" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    🔐 RBAC (Izin Akses Role)
+                </button>
+
+                <button onclick="switchTab('tab-oop')" id="btn-tab-oop" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    🎓 Bedah Pilar OOP Code
+                </button>
+
+                <button onclick="switchTab('tab-build')" id="btn-tab-build" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
+                    ⚙️ Build & Deployment
+                </button>
+            </nav>
+
+            <div class="px-6 mt-6">
+                <div class="bg-black/40 rounded-xl p-4 text-center border border-white/5">
+                    <p class="text-[11px] text-brand-gold mb-1">Mata Kuliah</p>
+                    <p class="text-sm font-bold text-gray-200">Pemrograman Berorientasi Objek</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="flex-1 h-screen overflow-y-auto relative scroll-smooth p-6 md:p-12 md:pl-20">
+            
+            <div class="max-w-4xl mx-auto pb-20">
+
+                <!-- TAB 1: INTRO -->
+                <section id="tab-intro" class="tab-content active">
+                    <div class="text-center mb-10">
+                        <h2 class="text-5xl md:text-6xl font-extrabold mt-6 mb-4 tracking-tight drop-shadow-md">🌙 LUNACAFFE <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-gold to-yellow-200 text-4xl block mt-2">Point of Sales System</span></h2>
+                        <p class="text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed border-t border-white/10 pt-4 mt-6">
+                            Sebuah evolusi tata kelola pesanan Kafe di era layar sentuh. Aplikasi berbasis <i>Java Swing MVC</i> yang menjembatani sistem pemesanan <b>Mandiri pelanggan (Self-Service Kiosk)</b> dengan pusat penyelesaian pesanan dapur <b>(Management Dashboard)</b> dalam satu nafas pemrograman berorientasi objek yang absolut!
+                        </p>
+                        
+                        <!-- NEW DEMO BUTTON INTEGRATION -->
+                        <div class="mt-8">
+                            <a href="demo_lunacaffe.html" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold hover:bg-yellow-300 text-brand-dark font-bold rounded-full text-lg shadow-[0_0_20px_rgba(241,196,15,0.4)] hover:shadow-[0_0_30px_rgba(241,196,15,0.6)] transition-all hover:-translate-y-1">
+                                <span class="text-2xl">🎮</span> Coba Demo Web Visual
+                            </a>
+                            <div class="text-xs text-gray-400 mt-3 font-mono">demo_lunacaffe.html</div>
+                        </div>
+                    </div>
+
+                    <div class="glass-panel p-8 rounded-[2rem] relative overflow-hidden shadow-2xl mt-12">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-brand-secondary rounded-full filter blur-[80px] opacity-30 mix-blend-screen pointer-events-none"></div>
+
+                        <h3 class="text-2xl font-bold mb-6 text-white border-b border-white/10 pb-4 text-center">Tim Pengembang (Kelompok 3)</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 relative z-10">
+                            
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5 justify-center">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center font-bold text-xl shadow-lg shrink-0">F</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-100 text-lg">Firgiawan Listianto</h4>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5 justify-center">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center font-bold text-xl shadow-lg shrink-0">N</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-100 text-lg">Muh. Nabil Makarimsyah</h4>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5 justify-center">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center font-bold text-xl shadow-lg shrink-0">J</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-100 text-lg">Jumaria</h4>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center gap-4 p-4 rounded-2xl bg-white/5 hover:bg-white/10 transition border border-white/5 justify-center">
+                                <div class="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center font-bold text-xl shadow-lg shrink-0">K</div>
+                                <div>
+                                    <h4 class="font-bold text-gray-100 text-lg">Kelvin Surya Putra</h4>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 2: QUESTIONS -->
+                <section id="tab-questions" class="tab-content">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#1</span> Menjawab Fundamental Teori
+                    </h2>
+                    
+                    <div class="space-y-6">
+                        <!-- Q1 -->
+                        <div class="glass-panel p-6 rounded-2xl hover:scale-[1.01] transition-transform">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 shrink-0 rounded-full bg-brand-gold/20 text-brand-gold flex items-center justify-center font-bold text-xl">1</div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-white mb-2">Apa Aplikasi yang Dibuat?</h3>
+                                    <p class="text-gray-300 leading-relaxed text-sm text-justify">Sebuah <b>Aplikasi POS (Point of Sales)</b> bernama Lunacaffe. Aplikasi ini membagi pengalaman layarnya menjadi dua mode independen: Fitur <b>Self-Service</b> untuk pelanggan (mencari kopi, menambah keranjang pesanan, dan mencetak tiket antrean secara otonom) dan fitur <b>Managerial</b> khusus bagi pegawai di belakang layar untuk menuntaskan antrean (*Order Queue*) ke pelanggan.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q2 -->
+                        <div class="glass-panel p-6 rounded-2xl hover:scale-[1.01] transition-transform">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 shrink-0 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-xl">2</div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-white mb-2">Siapa Saja User/Aktornya?</h3>
+                                    <p class="text-gray-300 leading-relaxed text-sm mb-3">Terdapat 3 ruang lingkup Hak Asasi Pengguna:</p>
+                                    <ul class="space-y-2 text-sm text-gray-300 font-medium">
+                                        <li class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_8px_#60A5FA]"></span> <div><b>Pelanggan Kiosk</b>: Masuk bebas (*guest*), menembus layar utama keranjang belanja secara langsung.</div></li>
+                                        <li class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-orange-400 shadow-[0_0_8px_#F97316]"></span> <div><b>Kasir (Regular Staff)</b>: Membutuhkan verifikasi kata sandi di Portal. Akses dibatasi hanya pada transaksi operasional pelanggan.</div></li>
+                                        <li class="flex items-center gap-3"><span class="w-3 h-3 rounded-full bg-red-500 shadow-[0_0_8px_#EF4444]"></span> <div><b>Admin (Super Staff)</b>: Memiliki otoritas tertinggi (*Root*). Mampu menambah menu, ubah harga, dan mendaftarkan pemecatan Kasir!</div></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Q3 -->
+                        <div class="glass-panel p-6 rounded-2xl border-l-4 border-l-brand-gold hover:scale-[1.01] transition-transform">
+                            <div class="flex gap-4">
+                                <div class="w-10 h-10 shrink-0 rounded-full bg-green-500/20 text-green-400 flex items-center justify-center font-bold text-xl">3</div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-white mb-2">Bagaimana Struktur Abstrak Kelas (Silsilah)?</h3>
+                                    <p class="text-gray-300 text-sm mb-4">Pemrograman Java kami membagi genetik (Turunan) aktor seperti skema akar pohon untuk mencapai ke-efisienan kode tertinggi *(Don't Repeat Yourself)*:</p>
+                                    
+                                    <div class="bg-black/50 p-4 rounded-xl border border-white/10 font-mono text-sm shadow-inner">
+                                        <div class="text-brand-gold mb-1">👑 <b>Induk Tertinggi:</b> <code class="text-white px-1">abstract class Aktor</code></div>
+                                        <div class="text-gray-400 text-xs pl-8 mb-4 border-l border-white/10 ml-2">Menelurkan kewajiban mutlak lewat <i>abstract method masukSistem()</i>. Tak satupun turunan bisa mengelak!</div>
+                                        
+                                        <div class="text-blue-400 mb-1 ml-4 flex items-center">- <span class="w-px h-px"></span> <b>Anak Jalur 1:</b> <code class="text-white px-1">class Pembeli extends Aktor</code></div>
+                                        <div class="text-gray-400 text-xs pl-12 mb-4 border-l border-white/10 ml-6">Membentuk aktor kasual tanpa jejak keamanan di RAM.</div>
+
+                                        <div class="text-orange-400 mb-1 ml-4 flex items-center">- <span class="w-px h-px"></span> <b>Anak Jalur 2:</b> <code class="text-white px-1">class Pegawai extends Aktor</code></div>
+                                        <div class="text-gray-400 text-xs pl-12 mb-4 border-l border-white/10 ml-6">Mewarisi genetik rahasia lewat enkapsulasi atribut <i>username</i> dan <i>password</i>.</div>
+                                        
+                                        <div class="text-purple-300 mb-1 ml-10 flex items-center">├─ <b>Cucu Sub-Pegawai A:</b> <code class="text-white px-1">class Kasir</code></div>
+                                        <div class="text-red-400 mb-1 ml-10 flex items-center">└─ <b>Cucu Sub-Pegawai B:</b> <code class="text-white px-1">class Admin</code></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 3: MAPPING -->
+                <section id="tab-mapping" class="tab-content">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#2</span> Matrix Pemetaan Fungsionalitas
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        
+                        <!-- Block 1 -->
+                        <div class="glass-panel p-6 rounded-[2rem] flex flex-col h-full border-t-8 border-t-blue-500 shadow-2xl relative overflow-hidden">
+                            <div class="absolute -top-10 -right-10 text-9xl opacity-5">🛒</div>
+                            <div class="text-4xl shadow-[0_0_15px_rgba(59,130,246,0.3)] mb-4 bg-blue-500/20 w-16 h-16 flex items-center justify-center rounded-2xl">📱</div>
+                            <h3 class="text-xl font-bold text-white mb-2">Modul <br>Pelanggan / Guest</h3>
+                            <ul class="text-sm text-gray-300 space-y-3 mt-2 flex-1">
+                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Live Search Abjad</b>: Menu tertampil real-time per ejaan huruf.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Sortir Harga</b>: Navigasi Harga termahal-termurah (Collection Sort).</div></li>
+                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Cart Guard</b>: Mencegah pelanggan menekan tambah produk jika stoknya nol.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Cetak Struk Window</b>: Menggelar nota tagihan HTML pop-up berisikan info pesanan.</div></li>
+                            </ul>
+                        </div>
+
+                        <!-- Block 2 -->
+                        <div class="glass-panel p-6 rounded-[2rem] flex flex-col h-full border-t-8 border-t-orange-500 shadow-2xl relative overflow-hidden">
+                            <div class="absolute -top-10 -right-10 text-9xl opacity-5">📋</div>
+                            <div class="text-4xl shadow-[0_0_15px_rgba(249,115,22,0.3)] mb-4 bg-orange-500/20 w-16 h-16 flex items-center justify-center rounded-2xl">🧑‍🍳</div>
+                            <h3 class="text-xl font-bold text-white mb-2">Modul <br>Operasional Kasir</h3>
+                            <ul class="text-sm text-gray-300 space-y-3 mt-2 flex-1">
+                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Log-in Session</b>: Pemasukan terenkripsi.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Tabel Pesanan Masuk (Live)</b>: Mendeteksi masuknya ID Antrean dari kasir depan.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Resolusi Status</b>: Membuka pesanan dan menandai status transaksi dari "Menunggu" menjadi "Selesai".</div></li>
+                            </ul>
+                        </div>
+
+                        <!-- Block 3 -->
+                        <div class="glass-panel p-6 rounded-[2rem] flex flex-col h-full border-t-8 border-t-red-500 shadow-2xl relative overflow-hidden">
+                            <div class="absolute -top-10 -right-10 text-9xl opacity-5">👑</div>
+                            <div class="text-4xl shadow-[0_0_15px_rgba(239,68,68,0.3)] mb-4 bg-red-500/20 w-16 h-16 flex items-center justify-center rounded-2xl">👔</div>
+                            <h3 class="text-xl font-bold text-white mb-2">Modul <br>Managerial Admin</h3>
+                            <ul class="text-sm text-gray-300 space-y-3 mt-2 flex-1">
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Semua hak kasir ditambah...</b></div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Stok Manajemen:</b> Menyuntik Inflow (Restok gudang fisik) ke menu.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Pemasaran Harga:</b> Modifikasi harga jual *on-the-fly*.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Kelola Akun Perizinan:</b> Tambah dan Pecat akun kasir lainnya (CRUD Users).</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Mesin CSV:</b> Automasi ekskresi Jurnal Pemasukan Keuangan format Excel ke muka *Desktop* Komputer hanya dengan 1 X klik.</div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB 4: ALUR TRANSAKSI -->
+                <section id="tab-alur" class="tab-content">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#3</span> Alur Logika Eksekusi Aplikasi
+                    </h2>
+                    
+                    <div class="bg-white/5 border border-white/10 rounded-3xl p-8 relative">
+                        <div class="absolute inset-0 bg-gradient-to-b from-transparent to-brand-primary/20 rounded-3xl pointer-events-none"></div>
+                        <h3 class="text-center font-bold text-gray-400 mb-8 tracking-widest text-sm uppercase">Peta Kehidupan Flowchart *Kiosk Self-Service*</h3>
+                        
+                        <div class="space-y-6 relative z-10">
+                            <!-- Flow 1 -->
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center font-bold shadow-[0_0_10px_#3B82F6] z-10 shrink-0">1</div>
+                                <div class="bg-black/40 p-4 rounded-xl border border-white/5 hover:border-blue-500/50 transition-colors w-full">
+                                    <h4 class="font-bold text-white">Menelusuri Etalase (Data Retrieval)</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Sistem membaca File <code>MenuDAO.java</code> dan memompa data *(Select from Menus)* ke Layar Swing Grid pelanggan. Tombol Filter abjad menyaring RAM.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="ml-[15px] w-0.5 h-6 bg-gradient-to-b from-blue-500 to-purple-500 rounded my-1"></div>
+
+                            <!-- Flow 2 -->
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center font-bold shadow-[0_0_10px_#A855F7] z-10 shrink-0">2</div>
+                                <div class="bg-black/40 p-4 rounded-xl border border-white/5 hover:border-purple-500/50 transition-colors w-full">
+                                    <h4 class="font-bold text-white">Suntikan ke Objek Keranjang</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Klik [Tambah]. Sistem merajut data di Model <code>Pesanan.java</code> dan <code>DetailPesanan.java</code>. Kalkulasi subtotal dilakukan aman di memori java.</p>
+                                </div>
+                            </div>
+
+                            <div class="ml-[15px] w-0.5 h-6 bg-gradient-to-b from-purple-500 to-orange-500 rounded my-1"></div>
+
+                            <!-- Flow 3 -->
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center font-bold shadow-[0_0_10px_#F97316] z-10 shrink-0">3</div>
+                                <div class="bg-black/40 p-4 rounded-xl border border-white/5 hover:border-orange-500/50 transition-colors w-full">
+                                    <h4 class="font-bold text-white">Eksekusi Checkout (Puncak Algoritma)</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Saat tombol Checkout diadu, <code>OrderDAO.java</code> mengemasnya kepada SQL: Mengurangankan Stok Asli, Melemparkan data <i>Order</i> pesanan baru, dan membuka Resi struk digital di layar!</p>
+                                </div>
+                            </div>
+                            
+                            <div class="ml-[15px] w-0.5 h-6 bg-gradient-to-b from-orange-500 to-green-500 rounded my-1"></div>
+
+                            <!-- Flow 4 -->
+                            <div class="flex items-start gap-4">
+                                <div class="mt-1 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-xl shadow-[0_0_10px_#22C55E] z-10 shrink-0">✓</div>
+                                <div class="bg-black/40 p-4 rounded-xl border border-white/5 hover:border-green-500/50 transition-colors w-full">
+                                    <h4 class="font-bold text-white">Ditangkap Kasir Dashboard</h4>
+                                    <p class="text-sm text-gray-400 mt-1">Pegawai kasir yang sedang <i>Standby</i> di portal admin dapat menekan tombol <i>Refresh Antrean</i>, dan nomor Tiket dari Kiosk tadi akan turun ke laci komputer kasir secara nyata!</p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- TAB 5: MVC & DB ARCHITECTURE -->
+                <section id="tab-mvc" class="tab-content">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#4</span> Anatomi Teknis Penggerak
+                    </h2>
+
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="glass-panel p-8 rounded-3xl border-l-4 border-l-indigo-400">
+                            <h3 class="text-2xl font-bold text-indigo-300 mb-6 flex items-center gap-2">🔌 Organ Arsitektur M-V-C</h3>
+                            <p class="text-gray-300 text-sm mb-6 text-justify">Kode proyek kami tidak ditulis sembarangan atau bergerombol panjang di satu kelas <code>Main.java</code>. Lunacaffe memilah organ tubuh aplikasi ke dalam bentuk paket (*Package*) bersih mengikuti metode *Best-Practice* Model-View-Controller:</p>
+                            
+                            <div class="grid md:grid-cols-3 gap-6">
+                                <div class="bg-black/30 p-5 rounded-2xl border border-indigo-500/20 hover:bg-black/50 transition-all">
+                                    <div class="text-4xl mb-3">🤖</div>
+                                    <b class="text-indigo-200 text-lg">M - Model</b><br>
+                                    <p class="text-xs text-brand-gold mt-1 mb-2 font-mono">com.lunacaffe.model.*</p>
+                                    <p class="text-xs text-gray-300">Struktur otak OOP. Di dalamnya tumbuh konstruktor kelas entitas. Data tidak mengalir jika bentuk *Class Menu* dan *Pembeli* belum dipahat di sini.</p>
+                                </div>
+                                <div class="bg-black/30 p-5 rounded-2xl border border-indigo-500/20 hover:bg-black/50 transition-all">
+                                    <div class="text-4xl mb-3">🖼️</div>
+                                    <b class="text-indigo-200 text-lg">V - View</b><br>
+                                    <p class="text-xs text-brand-gold mt-1 mb-2 font-mono">com.lunacaffe.view.*</p>
+                                    <p class="text-xs text-gray-300">Lukisan estetika. Seluruh panel berbasis komponen antarmuka GUI (Java Swing FlatLaf) bertugas mendesain bingkai tanpa menyentuh database sedikit pun.</p>
+                                </div>
+                                <div class="bg-black/30 p-5 rounded-2xl border border-indigo-500/20 hover:bg-black/50 transition-all">
+                                    <div class="text-4xl mb-3">🚀</div>
+                                    <b class="text-indigo-200 text-lg">C - Controller (DAO)</b><br>
+                                    <p class="text-xs text-brand-gold mt-1 mb-2 font-mono">com.lunacaffe.dao.*</p>
+                                    <p class="text-xs text-gray-300">Sang Mandor. Menangkap perintah dari View (Misal: Kasir teken Enter Login), dan DAO mengirim bahasanya agar diolah di mesin SQL dan melaporkan kembali validasinya (True/False).</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-panel p-8 rounded-3xl border-l-4 border-l-green-400 mt-4">
+                            <h3 class="text-2xl font-bold text-green-300 mb-6 flex items-center gap-2">🗄️ Relasional Database Schema (SQLite Offline)</h3>
+                            <p class="text-gray-300 text-sm mb-6 text-justify">Kami memilih menginjeksi mesin <b>SQLite</b> karena dia mampu membuat program ini berdiri *(Stand-Alone)* di laptop siapapun tanpa terhubung internet atau menyalakan XAMPP Server!</p>
+                            
+                            <div class="grid md:grid-cols-2 gap-4 font-mono text-xs">
+                                <div class="bg-black/60 p-5 rounded-xl border border-green-500/20">
+                                    <div class="text-green-400 font-bold mb-2 text-sm">🗂️ Table 1: users</div>
+                                    <ul class="text-gray-400 space-y-1.5 ml-2 border-l border-white/10 pl-3">
+                                        <li><span class="text-white">id</span> (PK - Varchar)</li>
+                                        <li>nama (Varchar)</li>
+                                        <li>username (Varchar, Unique)</li>
+                                        <li>password (Varchar)</li>
+                                        <li><span class="text-yellow-400 opacity-80">role</span> (Enum: admin/kasir)</li>
+                                    </ul>
+                                </div>
+
+                                <div class="bg-black/60 p-5 rounded-xl border border-green-500/20">
+                                    <div class="text-green-400 font-bold mb-2 text-sm">🗂️ Table 2: menus</div>
+                                    <ul class="text-gray-400 space-y-1.5 ml-2 border-l border-white/10 pl-3">
+                                        <li><span class="text-white">id</span> (PK - Varchar)</li>
+                                        <li>nama (Varchar), kategori (Varchar)</li>
+                                        <li>harga (Real), stok (Integer)</li>
+                                        <li>image_path (Varchar | Icon Emojis)</li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="bg-black/60 p-5 rounded-xl border border-green-500/20 md:col-span-2">
+                                    <div class="text-green-400 font-bold mb-2 text-sm">⛓️ Table 3 & 4: orders + order_details (Transaksi Relasional)</div>
+                                    <div class="flex flex-col md:flex-row gap-8">
+                                        <ul class="text-gray-400 space-y-1.5 ml-2 border-l border-white/10 pl-3 flex-1">
+                                            <li class="text-brand-gold italic">Data Bon/Resi Utuh:</li>
+                                            <li><span class="text-white">id</span> (PK - ex: ORD-2026-001)</li>
+                                            <li>nama_pelanggan, total_harga</li>
+                                            <li>status (Menunggu / Selesai)</li>
+                                        </ul>
+                                        <ul class="text-gray-400 space-y-1.5 ml-2 border-l border-white/10 pl-3 flex-1">
+                                            <li class="text-brand-gold italic">Data Rincian Per Tipe Beli:</li>
+                                            <li>id (Auto PK)</li>
+                                            <li><span class="text-blue-300">order_id</span> (FK ke tabel Orders)</li>
+                                            <li><span class="text-blue-300">menu_id</span> (FK ke tabel Menus)</li>
+                                            <li>qty (Jmlh), subtotal</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                <!-- TAB 6: RBAC -->
+                <section id="tab-rbac" class="tab-content">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#5</span> Identititas Login & Proteksi Keamanan
+                    </h2>
+                    <p class="text-gray-300 mb-8">Pemisahan rute hak atas sistem terprogram melalui baris <code class="text-brand-gold text-sm bg-white/10 px-1 rounded">setVisible(false)</code> di Controller. Gunakan kunci sandi berikut untuk membedah perbedaan layar ketika menguji dan menjalankan aplikasi nanti:</p>
+
+                    <div class="space-y-6 font-mono text-sm max-w-3xl mx-auto">
+                        
+                        <!-- Guest -->
+                        <div class="flex flex-col md:flex-row bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:border-blue-500/50 transition">
+                            <div class="bg-blue-600/30 p-6 md:w-1/3 flex flex-col justify-center items-center">
+                                <span class="text-5xl drop-shadow-[0_0_10px_#60A5FA]">🚹</span><span class="font-bold text-blue-200 mt-4 tracking-widest text-lg">GUEST</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-center">
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div><span class="text-gray-500 uppercase text-xs">User:</span> <span class="bg-black/50 px-2 py-1.5 rounded text-gray-400 font-bold block mt-1">Tanpa Akun</span></div>
+                                    <div><span class="text-gray-500 uppercase text-xs">Pass:</span> <span class="bg-black/50 px-2 py-1.5 rounded text-gray-400 font-bold block mt-1">Melewati Gembok</span></div>
+                                </div>
+                                <div class="text-gray-300 font-sans border-t border-white/10 pt-4 leading-relaxed">
+                                    <i>Aktor langsung berhadapan dengan layar besar Customer Panel di Kiosk depan. Sama sekali kehilangan identitasnya ke Panel Administrasi.</i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kasir -->
+                        <div class="flex flex-col md:flex-row bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:border-orange-500/50 transition">
+                            <div class="bg-orange-600/30 p-6 md:w-1/3 flex flex-col justify-center items-center">
+                                <span class="text-5xl drop-shadow-[0_0_10px_#FB923C]">🧑‍🍳</span><span class="font-bold text-orange-200 mt-4 tracking-widest text-lg">KASIR</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-center">
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div><span class="text-gray-500 uppercase text-xs">User:</span> <span class="bg-black/40 text-orange-400 px-3 py-1.5 rounded border border-orange-500/30 select-all font-bold block mt-1">kasir1</span></div>
+                                    <div><span class="text-gray-500 uppercase text-xs">Pass:</span> <span class="bg-black/40 text-green-400 px-3 py-1.5 rounded border border-green-500/30 select-all font-bold block mt-1">123</span></div>
+                                </div>
+                                <div class="text-gray-300 font-sans border-t border-white/10 pt-4 leading-relaxed text-sm">
+                                    Amanat mereka adalah memproses pemenuhan pesanan dari dapur. Tabel Manajemen dikunci gaib, Tombol rahasia <i>Kelola Menu</i> & <i>Akun</i> musnah dicabut dari layar.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Admin -->
+                        <div class="flex flex-col md:flex-row bg-white/5 border border-white/10 rounded-2xl overflow-hidden shadow-lg hover:border-red-500/50 transition">
+                            <div class="bg-red-600/30 p-6 md:w-1/3 flex flex-col justify-center items-center">
+                                <span class="text-5xl drop-shadow-[0_0_10px_#F87171]">👔</span><span class="font-bold text-red-200 mt-4 tracking-widest text-lg">SUPER ADMIN</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-center">
+                                <div class="grid grid-cols-2 gap-4 mb-4">
+                                    <div><span class="text-gray-500 uppercase text-xs">User:</span> <span class="bg-black/40 text-red-400 px-3 py-1.5 rounded border border-red-500/30 select-all font-bold block mt-1">admin</span></div>
+                                    <div><span class="text-gray-500 uppercase text-xs">Pass:</span> <span class="bg-black/40 text-green-400 px-3 py-1.5 rounded border border-green-500/30 select-all font-bold block mt-1">123</span></div>
+                                </div>
+                                <div class="text-gray-300 font-sans border-t border-white/10 pt-4 leading-relaxed text-sm">
+                                    Pemilik dan Tuhan *(Spesialis Pangkalan Data)*. Tombol berantai akan memunculkan Tabel Gudang dan Tabel Pemecatan Pegawai secara eksklusif.
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- TAB 7: OOP PILLARS -->
+                <section id="tab-oop" class="tab-content relative">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#6</span> Pembuktian Fundamental PBO
+                    </h2>
+                    <p class="text-lg text-gray-300 mb-8 font-light">Bukti otentik bahwa kelompok kami mampu mendaratkan hukum teori murni ke tatanan program hidup. Silakan bongkar akordeon pilar di bawah dengan me-kliknya!</p>
+
+                    <div class="space-y-4">
+                        
+                        <!-- 1. Class -->
+                        <div class="code-revealer glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/30 transition">
+                            <button class="w-full text-left p-6 bg-white/5 hover:bg-white/10 flex justify-between items-center transition" onclick="toggleOOP('oop-class', this)">
+                                <div><span class="text-brand-gold font-bold mr-3 opacity-50">01</span><span class="font-bold text-xl">Pembuatan Class (Cetak Biru Abstrak)</span></div>
+                                <span class="text-3xl expand-icon text-brand-gold font-light">+</span>
+                            </button>
+                            <div id="oop-class" class="hidden p-6 border-t border-white/10 bg-black/60 shadow-inner">
+                                <p class="text-sm text-gray-300 mb-4 leading-relaxed">Pembangun bangunan tidak akan menuang semen tanpa denah arsitek. Dalam OOP, <code>class</code> adalah cetak biru itu. Kami tidak menciptakan Menu di sembarang tempat, tapi membungkus kerangkanya resmi.</p>
+                                <pre class="code-block text-sm bg-[#0D1117] p-5 rounded-xl text-teal-300 overflow-x-auto border border-gray-800"><code>public class Menu {
+    private String idMenu;
+    private String namaMenu;
+    private double harga;
+    
+    // Konstruktor Pembentuk Kehidupan
+    public Menu(String id, String nm, double hg) {
+        this.idMenu = id;
+        this.namaMenu = nm;
+        this.harga = hg;
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- 2. Object -->
+                        <div class="code-revealer glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/30 transition">
+                            <button class="w-full text-left p-6 bg-white/5 hover:bg-white/10 flex justify-between items-center transition" onclick="toggleOOP('oop-obj', this)">
+                                <div><span class="text-brand-gold font-bold mr-3 opacity-50">02</span><span class="font-bold text-xl">Penciptaan Object (Instansiasi Fisik)</span></div>
+                                <span class="text-3xl expand-icon text-brand-gold font-light">+</span>
+                            </button>
+                            <div id="oop-obj" class="hidden p-6 border-t border-white/10 bg-black/60 shadow-inner">
+                                <p class="text-sm text-gray-300 mb-4 leading-relaxed">Denah dihidupkan dengan kata kunci <code class="bg-white/10 px-1 rounded text-pink-400">new</code>. Object adalah bentuk wujud yang menghisap porsi memori RAM komputasi. Ketika pembeli masuk *CustomerPanel*, wujud Pesanan dilahirkan asisten kami.</p>
+                                <pre class="code-block text-sm bg-[#0D1117] p-5 rounded-xl text-teal-300 overflow-x-auto border border-gray-800"><code>// Berada di dalam class CustomerPanel.java:
+private void initNewPesanan() {
+    // Menciptakan object nyata Pesanan di memori Aplikasi
+    // Meminta nama ("TEMP", "Guest", "Status Awal") ke Konstruktornya!
+    currentPesanan = new Pesanan("TEMP_ID", "Guest", "Menunggu");
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- 3. Encapsulation -->
+                        <div class="code-revealer glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/30 transition">
+                            <button class="w-full text-left p-6 bg-white/5 hover:bg-white/10 flex justify-between items-center transition" onclick="toggleOOP('oop-enc', this)">
+                                <div><span class="text-brand-gold font-bold mr-3 opacity-50">03</span><span class="font-bold text-xl">Encapsulation (Penyembunyian Identitas)</span></div>
+                                <span class="text-3xl expand-icon text-brand-gold font-light">+</span>
+                            </button>
+                            <div id="oop-enc" class="hidden p-6 border-t border-white/10 bg-black/60 shadow-inner">
+                                <p class="text-sm text-gray-300 mb-4 leading-relaxed">Menjaga privasi. Atribut di gembok paksa menggunakan <code class="text-red-400 font-bold">private</code> agar *Hacker* / kelas usil tidak bisa meng-edit harga sembarangan dari pintu depan. Komunikasi perdata wajib lewat Get/Set.</p>
+                                <pre class="code-block text-sm bg-[#0D1117] p-5 rounded-xl text-teal-300 overflow-x-auto border border-gray-800"><code>// Di class Pesanan.java
+private double totalHarga; // Rahasia dan Gelap!
+
+// Pintu Akses Tunggal Resmi (Public)
+public void setTotalHarga(double tot) {
+    if(tot >= 0) this.totalHarga = tot; // Aman & Validasi
+}
+
+public double getTotalHarga() { 
+    return this.totalHarga; // Laporan sah 
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- 4. Inheritance -->
+                        <div class="code-revealer glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/30 transition">
+                            <button class="w-full text-left p-6 bg-white/5 hover:bg-white/10 flex justify-between items-center transition" onclick="toggleOOP('oop-inh', this)">
+                                <div><span class="text-brand-gold font-bold mr-3 opacity-50">04</span><span class="font-bold text-xl">Inheritance (Pewarisan Genetik DR-Y)</span></div>
+                                <span class="text-3xl expand-icon text-brand-gold font-light">+</span>
+                            </button>
+                            <div id="oop-inh" class="hidden p-6 border-t border-white/10 bg-black/60 shadow-inner">
+                                <p class="text-sm text-gray-300 mb-4 leading-relaxed">Prinsip Don't Repeat Yourself (DRY). Kami mewariskan karakter dari `Pegawai` menggunakan <code class="text-purple-400 font-bold">extends</code> ke anak turunannya agar tidak kepingkal-pingkal menulis berulang.</p>
+                                <pre class="code-block text-sm bg-[#0D1117] p-5 rounded-xl text-teal-300 overflow-x-auto border border-gray-800"><code>public class Admin extends Pegawai {
+    // Admin secara magis punya variabel username dan password, 
+    // meski di dalamnya terlihat kosong, gen-nya sudah diturunkan.
+    
+    public Admin(String nama, String username, String pass) {
+        // Keyword super() menembak pelurunya langsung ke Rahim Bapaknya
+        super(null, nama, username, pass, "admin"); 
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- 5. Polymorphism -->
+                        <div class="code-revealer glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/30 transition">
+                            <button class="w-full text-left p-6 bg-white/5 hover:bg-white/10 flex justify-between items-center transition" onclick="toggleOOP('oop-pol', this)">
+                                <div><span class="text-brand-gold font-bold mr-3 opacity-50">05</span><span class="font-bold text-xl">Polymorphism (Revolusi Banyak Muka)</span></div>
+                                <span class="text-3xl expand-icon text-brand-gold font-light">+</span>
+                            </button>
+                            <div id="oop-pol" class="hidden p-6 border-t border-white/10 bg-black/60 shadow-inner">
+                                <p class="text-sm text-gray-300 mb-4 leading-relaxed">Berbeda perlakuan walau dipanggil dengan nama perintah yang sama (Metode *Overriding*). Fungsi <code class="text-green-400">masukSistem()</code> menghasilkan pergerakan radikal di masing jiwa raga aktor!</p>
+                                <pre class="code-block text-sm bg-[#0D1117] p-5 rounded-xl text-teal-300 overflow-x-auto border border-gray-800"><code>// 1. DI CLASS PEMBELI:
+@Override
+public void masukSistem() {
+    System.out.println("Pembeli dilarikan ke Katalog Kopi Terbuka!");
+}
+
+// 2. DI CLASS PEGAWAI:
+@Override
+public void masukSistem() {
+    System.out.println("Peringatan! Pegawai WAJIB disaring Validasi Kata Sandi Database Dulu!");
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <!-- 6. Abstraction -->
+                        <div class="code-revealer glass-panel rounded-2xl overflow-hidden border border-white/10 hover:border-brand-gold/30 transition">
+                            <button class="w-full text-left p-6 bg-white/5 hover:bg-white/10 flex justify-between items-center transition" onclick="toggleOOP('oop-abs', this)">
+                                <div><span class="text-brand-gold font-bold mr-3 opacity-50">06</span><span class="font-bold text-xl">Abstraction (Perjanjian Mutlak)</span></div>
+                                <span class="text-3xl expand-icon text-brand-gold font-light">+</span>
+                            </button>
+                            <div id="oop-abs" class="hidden p-6 border-t border-white/10 bg-black/60 shadow-inner">
+                                <p class="text-sm text-gray-300 mb-4 leading-relaxed">Ide Abstrak tidak punya jasad. Kelas <code>Aktor</code> disegel dengan metode tak berisi agar dia mustahil wujud merdeka, dan malah memaksa seluruh anaknya memiliki rute masuk kerja mandiri.</p>
+                                <pre class="code-block text-sm bg-[#0D1117] p-5 rounded-xl text-teal-300 overflow-x-auto border border-gray-800"><code>public abstract class Aktor {
+    
+    // Ini bukan deklarasi panggil, melainkan Kontrak Hukum!
+    // Memaksa siapa saja turunan Aktor wajib membuat "masukSistem()"!
+    public abstract void masukSistem(); 
+}
+
+// Bukti: Jika Anda menulis 'Aktor x = new Aktor();' di NetBeans, 
+// IDE Java akan komplain dan menggemakan ERROR warna merah! 
+// "Aktor terlalu Gaib, dia hanya konsep!"</code></pre>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- TAB 8: BUILD AND DEVELOPMENT -->
+                <section id="tab-build" class="tab-content relative">
+                    <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
+                        <span class="text-brand-gold">#7</span> Kompilasi Eksekusi Program (Run)
+                    </h2>
+                    
+                    <div class="p-8 glass-panel rounded-3xl relative overflow-hidden">
+                        <div class="absolute right-0 bottom-0 opacity-10 text-9xl">⚙️</div>
+                        <h3 class="text-xl font-bold text-white mb-4">Cara Membedah & Menjalankan LUNACAFFE di Dapur Lokal Anda</h3>
+                        
+                        <div class="space-y-4 relative z-10 text-gray-300 text-sm leading-relaxed">
+                            <p>Proyek ini diawasi ketat oleh <b class="text-red-400">Apache Maven</b> untuk automasi injeksi dependensi sehingga Anda tidak direpotkan dengan perpindahan raib *(Missing .JAR Library)*.</p>
+                            
+                            <ol class="list-decimal pl-5 space-y-3 mt-4 text-gray-400">
+                                <li>Pastikan persenjataan utama <b>JDK (Java Development Kit) 11 atau 17+</b> berada dalam perangkat Anda.</li>
+                                <li><i>Clone/Download</i> Repositori ke dalam penyimpanan folder NetBeans atau IntelliJ Anda. Jangan dihambur asal-asalan.</li>
+                                <li>Bukalah direktori sebagai sebuah bingkai <i>"Open Maven Project"</i>. Otomatisasi sinkronisasi <i>pom.xml</i> akan menurunkan modul magis <code>FlatLaf 3.2.1</code> dan pelengkap <code>sqlite-jdbc 3.42</code>.</li>
+                                <li>Pergi menuju kelas muasal <code>src/main/java/com/lunacaffe/Main.java</code> lalu lepaskan pelatuk (Run File / <i>Shift+F6</i>).</li>
+                                <li><b>Pemberitahuan Aman!</b> Begitu aplikasi menyala pertama kali, Modul <code>DatabaseConnection.java</code> akan membentuk <i>lunacaffe.db</i> file sendirian menempel pada pijakan direktori Anda, menyuntikkan Master Data dan Bibit Akun siap pakai secara ajaib!</li>
+                            </ol>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer spacing -->
+                <div class="h-20"></div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Interactive script -->
+    <script>
+        function switchTab(tabId) {
+            // Hide all contents
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            // Show target
+            document.getElementById(tabId).classList.add('active');
+
+            // Update nav styling
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-secondary/60', 'border-white/20', 'text-white', 'shadow-lg');
+                btn.classList.add('text-gray-400', 'border-transparent');
+            });
+            
+            let activeBtn = document.getElementById('btn-' + tabId);
+            activeBtn.classList.add('bg-brand-secondary/60', 'border-white/20', 'text-white', 'shadow-lg');
+            activeBtn.classList.remove('text-gray-400', 'border-transparent');
+            
+            // Scroll to top
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleOOP(id, btnElement) {
+            let el = document.getElementById(id);
+            let icon = btnElement.querySelector('.expand-icon');
+            if (el.classList.contains('hidden')) {
+                el.classList.remove('hidden');
+                btnElement.classList.add('bg-white/10', 'border-brand-gold/30');
+                icon.innerText = "−";
+                icon.classList.add('text-rose-400');
+                icon.classList.remove('text-brand-gold');
+            } else {
+                el.classList.add('hidden');
+                btnElement.classList.remove('bg-white/10', 'border-brand-gold/30');
+                icon.innerText = "+";
+                icon.classList.remove('text-rose-400');
+                icon.classList.add('text-brand-gold');
+            }
+        }
+    </script>
+</body>
+</html>
