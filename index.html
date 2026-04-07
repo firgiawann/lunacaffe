@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistem Dokumentasi: Lunacaffe POS</title>
+    <title>Documentation System: Lunacaffe POS</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -77,19 +77,19 @@
             
             <nav class="flex-1 flex flex-col gap-1.5 px-3 overflow-y-auto mt-4">
                 <button onclick="switchTab('tab-intro')" id="btn-tab-intro" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium bg-brand-secondary/60 border-white/20 text-white shadow-lg text-sm">
-                    👋 Tim Anggota (Kel. 3)
+                    👋 Team Members (Group 3)
                 </button>
                 
                 <button onclick="switchTab('tab-questions')" id="btn-tab-questions" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
-                    ❓ Analisis Pertanyaan PBO
+                    ❓ OOP Q&A Analysis
                 </button>
                 
                 <button onclick="switchTab('tab-mapping')" id="btn-tab-mapping" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
-                    🧩 Mapping Fitur
+                    🧩 Feature Mapping
                 </button>
 
                 <button onclick="switchTab('tab-alur')" id="btn-tab-alur" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
-                    🔄 Alur Kerja Pelanggan
+                    🔄 Customer Workflow
                 </button>
                 
                 <button onclick="switchTab('tab-mvc')" id="btn-tab-mvc" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
@@ -97,11 +97,11 @@
                 </button>
 
                 <button onclick="switchTab('tab-rbac')" id="btn-tab-rbac" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
-                    🔐 RBAC (Izin Akses Role)
+                    🔐 RBAC (Role Access)
                 </button>
 
                 <button onclick="switchTab('tab-oop')" id="btn-tab-oop" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
-                    🎓 Bedah Pilar OOP Code
+                    🎓 OOP Pillars in Code
                 </button>
 
                 <button onclick="switchTab('tab-build')" id="btn-tab-build" class="nav-btn w-full text-left px-5 py-3 rounded-xl transition-all duration-300 hover:bg-brand-secondary/40 border border-transparent font-medium text-gray-400 hover:text-gray-200 text-sm">
@@ -122,7 +122,7 @@
             <div class="md:hidden mb-4 sticky top-0 z-10">
                 <button onclick="toggleMobileSidebar(true)" class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-brand-secondary/70 hover:bg-brand-secondary text-white border border-white/20 shadow-lg">
                     <span class="text-lg">☰</span>
-                    <span class="text-sm font-semibold">Menu Navigasi</span>
+                    <span class="text-sm font-semibold">Navigation Menu</span>
                 </button>
             </div>
             
@@ -139,10 +139,10 @@
                         <!-- REPOSITORY & DEMO BUTTON INTEGRATION -->
                         <div class="mt-8">
                             <a href="https://github.com/firgiawann/lunacaffe" target="_blank" rel="noopener noreferrer" aria-label="Open LunaCaffe GitHub repository in new tab" class="inline-flex items-center gap-3 px-8 py-4 bg-brand-secondary hover:bg-brand-accent text-white font-bold rounded-full text-lg shadow-[0_0_20px_rgba(108,92,231,0.35)] hover:shadow-[0_0_30px_rgba(108,92,231,0.5)] transition-all hover:-translate-y-1 mb-4">
-                                <span class="text-2xl">🔗</span> Lihat Repository GitHub
+                                <span class="text-2xl">🔗</span> View GitHub Repository
                             </a>
                             <a href="demo_lunacaffe.html" target="_blank" rel="noopener noreferrer" aria-label="Try LunaCaffe web demo in new tab" class="inline-flex items-center gap-3 px-8 py-4 bg-brand-gold hover:bg-yellow-300 text-brand-dark font-bold rounded-full text-lg shadow-[0_0_20px_rgba(241,196,15,0.4)] hover:shadow-[0_0_30px_rgba(241,196,15,0.6)] transition-all hover:-translate-y-1">
-                                <span class="text-2xl">🎮</span> Coba Demo Web Visual
+                                <span class="text-2xl">🎮</span> Try Web Visual Demo
                             </a>
                             <div class="text-xs text-yellow-300 mt-2 font-semibold">Untuk pengalaman terbaik, disarankan membuka demo dalam mode desktop.</div>
                             <div class="text-xs text-gray-400 mt-3 font-mono">demo_lunacaffe.html</div>
@@ -189,7 +189,7 @@
                 <!-- TAB 2: QUESTIONS -->
                 <section id="tab-questions" class="tab-content">
                     <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
-                        <span class="text-brand-gold">#1</span> Menjawab Fundamental Teori
+                        <span class="text-brand-gold">#1</span> Fundamental Theory Q&A
                     </h2>
                     
                     <div class="space-y-6">
@@ -250,7 +250,7 @@
                 <!-- TAB 3: MAPPING -->
                 <section id="tab-mapping" class="tab-content">
                     <h2 class="text-3xl font-extrabold mb-8 flex items-center gap-3">
-                        <span class="text-brand-gold">#2</span> Matrix Pemetaan Fungsionalitas
+                        <span class="text-brand-gold">#2</span> Feature Mapping Matrix
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -259,12 +259,12 @@
                         <div class="glass-panel p-6 rounded-[2rem] flex flex-col h-full border-t-8 border-t-blue-500 shadow-2xl relative overflow-hidden">
                             <div class="absolute -top-10 -right-10 text-9xl opacity-5">🛒</div>
                             <div class="text-4xl shadow-[0_0_15px_rgba(59,130,246,0.3)] mb-4 bg-blue-500/20 w-16 h-16 flex items-center justify-center rounded-2xl">📱</div>
-                            <h3 class="text-xl font-bold text-white mb-2">Modul <br>Pelanggan / Guest</h3>
+                            <h3 class="text-xl font-bold text-white mb-2">Module <br>Customer / Guest</h3>
                             <ul class="text-sm text-gray-300 space-y-3 mt-2 flex-1">
                                 <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Live Search Abjad</b>: Menu tertampil real-time per ejaan huruf.</div></li>
-                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Sortir Harga</b>: Navigasi Harga termahal-termurah (Collection Sort).</div></li>
+                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Price Sorting</b>: Navigate prices from highest to lowest (Collection Sort).</div></li>
                                 <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Cart Guard</b>: Mencegah pelanggan menekan tambah produk jika stoknya nol.</div></li>
-                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Cetak Struk Window</b>: Menggelar nota tagihan HTML pop-up berisikan info pesanan.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-blue-400">❖</span> <div><b>Receipt Pop-up Window</b>: Displays an HTML bill pop-up with order details.</div></li>
                             </ul>
                         </div>
 
@@ -275,8 +275,8 @@
                             <h3 class="text-xl font-bold text-white mb-2">Modul <br>Operasional Kasir</h3>
                             <ul class="text-sm text-gray-300 space-y-3 mt-2 flex-1">
                                 <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Log-in Session</b>: Pemasukan terenkripsi.</div></li>
-                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Tabel Pesanan Masuk (Live)</b>: Mendeteksi masuknya ID Antrean dari kasir depan.</div></li>
-                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Resolusi Status</b>: Membuka pesanan dan menandai status transaksi dari "Menunggu" menjadi "Selesai".</div></li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Live Order Table</b>: Detects incoming queue IDs from the front cashier.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-orange-400">❖</span> <div><b>Status Update</b>: Opens orders and updates transaction status from "Waiting" to "Completed".</div></li>
                             </ul>
                         </div>
 
@@ -284,13 +284,13 @@
                         <div class="glass-panel p-6 rounded-[2rem] flex flex-col h-full border-t-8 border-t-red-500 shadow-2xl relative overflow-hidden">
                             <div class="absolute -top-10 -right-10 text-9xl opacity-5">👑</div>
                             <div class="text-4xl shadow-[0_0_15px_rgba(239,68,68,0.3)] mb-4 bg-red-500/20 w-16 h-16 flex items-center justify-center rounded-2xl">👔</div>
-                            <h3 class="text-xl font-bold text-white mb-2">Modul <br>Managerial Admin</h3>
+                            <h3 class="text-xl font-bold text-white mb-2">Module <br>Admin Management</h3>
                             <ul class="text-sm text-gray-300 space-y-3 mt-2 flex-1">
                                 <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Semua hak kasir ditambah...</b></div></li>
-                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Stok Manajemen:</b> Menyuntik Inflow (Restok gudang fisik) ke menu.</div></li>
-                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Pemasaran Harga:</b> Modifikasi harga jual *on-the-fly*.</div></li>
-                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Kelola Akun Perizinan:</b> Tambah dan Pecat akun kasir lainnya (CRUD Users).</div></li>
-                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Mesin CSV:</b> Automasi ekskresi Jurnal Pemasukan Keuangan format Excel ke muka *Desktop* Komputer hanya dengan 1 X klik.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Stock Management:</b> Applies inventory restock inflow to menu items.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>Price Management:</b> Modify selling prices *on-the-fly*.</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>User Access Management:</b> Add and remove cashier accounts (CRUD Users).</div></li>
+                                <li class="flex items-start gap-2"><span class="text-red-400">❖</span> <div><b>CSV Export Engine:</b> Export financial journal data to Excel format on desktop in one click.</div></li>
                             </ul>
                         </div>
                     </div>
