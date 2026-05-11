@@ -21,10 +21,10 @@ public class MainFrame extends JFrame {
     private DashboardPanel dashboardPanel;
 
     public MainFrame() {
-        // Init SQLite DB inside UI Thread or App Start up (Ideally on app startup)
+        
         DatabaseConnection.initializeDatabase();
         
-        setTitle("Lunacaffe POS System v2.0 Production");
+        setTitle("Lunacaffe POS System v2.2");
         setSize(1200, 700);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -39,14 +39,14 @@ public class MainFrame extends JFrame {
             java.awt.Graphics2D g2 = iconImg.createGraphics();
             g2.setRenderingHint(java.awt.RenderingHints.KEY_ANTIALIASING, java.awt.RenderingHints.VALUE_ANTIALIAS_ON);
             g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 46));
-            g2.drawString("🌌", 8, 48); // Langit
+            g2.drawString("ðŸŒŒ", 8, 48); 
             g2.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 32));
-            g2.drawString("🌙", 20, 36); // Bulan
+            g2.drawString("ðŸŒ™", 20, 36); 
             g2.dispose();
             setIconImage(iconImg);
         } catch (Exception ex) {}
 
-        // Header...
+        
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBackground(COLOR_BACKGROUND);
 
@@ -54,12 +54,12 @@ public class MainFrame extends JFrame {
         headerPanel.setBackground(COLOR_PRIMARY);
         headerPanel.setPreferredSize(new Dimension(getWidth(), 50));
 
-        JLabel titleLabel = new JLabel("  🌙 Lunacaffe POS System");
+        JLabel titleLabel = new JLabel("  ðŸŒ™ Lunacaffe POS System");
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         headerPanel.add(titleLabel, BorderLayout.WEST);
 
-        // Tabs
+        
         JPanel tabsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 10));
         tabsPanel.setBackground(Color.WHITE);
         tabsPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY));
@@ -73,7 +73,7 @@ public class MainFrame extends JFrame {
         tabsPanel.add(btnPelanggan);
         tabsPanel.add(btnPegawai);
 
-        // Cards layout mapping
+        
         cardLayout = new CardLayout();
         cardsPanel = new JPanel(cardLayout);
         
@@ -85,7 +85,7 @@ public class MainFrame extends JFrame {
         cardsPanel.add(loginPanel, "LOGIN");
         cardsPanel.add(dashboardPanel, "DASHBOARD");
 
-        // Listeners for top tabs
+        
         btnPelanggan.addActionListener(e -> {
             styleTabButton(btnPelanggan, true);
             styleTabButton(btnPegawai, false);
@@ -109,16 +109,16 @@ public class MainFrame extends JFrame {
         mainPanel.add(topContainer, BorderLayout.NORTH);
         mainPanel.add(cardsPanel, BorderLayout.CENTER);
         
-        // FOOTER COPYRIGHT & ABOUT
+        
         JPanel footerPanel = new JPanel(new BorderLayout());
         footerPanel.setBackground(Color.decode("#EAE5E1"));
         footerPanel.setBorder(BorderFactory.createEmptyBorder(6, 20, 6, 20));
 
-        JLabel lblCopyright = new JLabel("© 2026 - Developed by Kelompok 3 | PBO");
+        JLabel lblCopyright = new JLabel("Â© 2026 - Developed by Kelompok 3 | PBO");
         lblCopyright.setFont(new Font("Segoe UI", Font.BOLD, 12));
         lblCopyright.setForeground(COLOR_PRIMARY);
 
-        JButton btnAbout = new JButton("ℹ️ Tentang Kelompok");
+        JButton btnAbout = new JButton("Tentang Kelompok");
         btnAbout.setContentAreaFilled(false);
         btnAbout.setBorderPainted(false);
         btnAbout.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -136,7 +136,7 @@ public class MainFrame extends JFrame {
     
     private void showAboutDialog() {
         String htmlMsg = "<html><body style='width: 350px; font-family: Segoe UI, sans-serif;'>" +
-            "<h2 style='color:#2A113A; text-align:center;'>🌙 LUNACAFFE POS SYSTEM</h2>" +
+            "<h2 style='color:#2A113A; text-align:center;'>ðŸŒ™ LUNACAFFE POS SYSTEM</h2>" +
             "<p style='text-align:center; color:gray; margin-top:-10px;'><i>Final Project Edition</i></p>" +
             "<p style='text-align:justify;'>Aplikasi Point of Sales mandiri ini dibangun sebagai pemenuhan Tugas Mata Kuliah <b>Pemrograman Berorientasi Objek (PBO)</b>. Sistem dirancang dengan arsitektur modern <b>MVC (Model-View-Controller)</b> dan konsep Polimorfisme yang solid, dilengkapi manajemen basis data relasional via <b>SQLite</b>.</p>" +
             "<hr style='border:1px dashed #CCC'>" +
@@ -147,7 +147,7 @@ public class MainFrame extends JFrame {
             "<li><b>KELVIN SURYA PUTRA</b></li>" +
             "</ul>" +
             "<hr style='border:1px dashed #CCC'>" +
-            "<p style='text-align:center; font-size:10px; color:gray;'>Versi Basis Data Lokal V.2.1 | © 2026 All Rights Reserved</p>" +
+            "<p style='text-align:center; font-size:10px; color:gray;'>Versi Basis Data Lokal V.2.1 | Â© 2026 All Rights Reserved</p>" +
             "</body></html>";
 
         JOptionPane.showMessageDialog(this, htmlMsg, "Credit & Tim Pengembang", JOptionPane.INFORMATION_MESSAGE);
@@ -169,7 +169,7 @@ public class MainFrame extends JFrame {
         }
     }
     
-    // Controller-like navigation method exposed to children panels
+    
     public void showDashboard() {
         dashboardPanel.updateRoleUI();
         cardLayout.show(cardsPanel, "DASHBOARD");

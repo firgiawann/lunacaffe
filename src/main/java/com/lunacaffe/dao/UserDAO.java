@@ -48,7 +48,6 @@ public class UserDAO {
         return null;
     }
     
-    // PERKEMBANGAN: Admin Kelola Akun
     public List<Pegawai> getAllUsers() {
         List<Pegawai> list = new ArrayList<>();
         String sql = "SELECT * FROM users";

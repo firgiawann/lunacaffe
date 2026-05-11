@@ -17,9 +17,9 @@ public class LoginPanel extends JPanel {
 
     public LoginPanel(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        setLayout(new GridBagLayout()); // To center the card
+        setLayout(new GridBagLayout()); 
         
-        // Premium Gradient Background effect (Or just a soft cream)
+        
         setBackground(Color.decode("#F5F2EE")); 
         initUI();
     }
@@ -31,16 +31,16 @@ public class LoginPanel extends JPanel {
         JPanel cardLabel = new JPanel();
         cardLabel.setLayout(new BoxLayout(cardLabel, BoxLayout.Y_AXIS));
         cardLabel.setBackground(Color.WHITE);
-        // Added a thick border simulating a gentle modern drop-shadow/frame
+        
         cardLabel.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(Color.decode("#DCD0C0"), 1, true),
             new EmptyBorder(40, 50, 40, 50)
         ));
 
-        // Circular Logo simulation using a label shaped nicely
-        JLabel lblIcon = new JLabel("🌙", SwingConstants.CENTER);
+        
+        JLabel lblIcon = new JLabel("ðŸŒ™", SwingConstants.CENTER);
         lblIcon.setFont(new Font("Segoe UI Emoji", Font.PLAIN, 45));
-        lblIcon.setForeground(Color.decode("#F1C40F")); // Gold moon
+        lblIcon.setForeground(Color.decode("#F1C40F"));
         lblIcon.setAlignmentX(Component.CENTER_ALIGNMENT);
         lblIcon.setBorder(new EmptyBorder(0, 0, 15, 0));
 
@@ -65,7 +65,7 @@ public class LoginPanel extends JPanel {
         txtUsername = new JTextField();
         txtUsername.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         txtUsername.putClientProperty("JTextField.placeholderText", "Contoh: admin / kasir1");
-        txtUsername.putClientProperty("JComponent.roundRect", true); // FlatLaf feature
+        txtUsername.putClientProperty("JComponent.roundRect", true); 
         
         JLabel lblPass = new JLabel("Kata Sandi");
         lblPass.setFont(new Font("Segoe UI", Font.BOLD, 12));
@@ -81,7 +81,7 @@ public class LoginPanel extends JPanel {
         fieldsPanel.add(lblPass);
         fieldsPanel.add(txtPassword);
 
-        JButton btnLogin = new JButton("Gass, Masuk!");
+        JButton btnLogin = new JButton("Masuk");
         btnLogin.setFont(new Font("Segoe UI", Font.BOLD, 14));
         btnLogin.setBackground(MainFrame.COLOR_SECONDARY);
         btnLogin.setForeground(Color.WHITE);
@@ -91,7 +91,7 @@ public class LoginPanel extends JPanel {
         btnLogin.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnLogin.putClientProperty("JButton.buttonType", "roundRect");
         
-        // Hover Effect
+        
         btnLogin.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) { btnLogin.setBackground(MainFrame.COLOR_PRIMARY); }
@@ -101,7 +101,7 @@ public class LoginPanel extends JPanel {
 
         btnLogin.addActionListener(e -> attemptLogin());
 
-        // Assembly
+        
         cardLabel.add(lblIcon);
         cardLabel.add(lblTitle);
         cardLabel.add(lblSubtitle);
@@ -112,7 +112,7 @@ public class LoginPanel extends JPanel {
 
         cardWrapper.add(cardLabel, BorderLayout.CENTER);
         
-        // Add footer hint
+        
         JLabel lblHint = new JLabel("Versi 2.1 | Aman & Terenkripsi");
         lblHint.setFont(new Font("Segoe UI", Font.PLAIN, 11));
         lblHint.setForeground(Color.LIGHT_GRAY);
@@ -132,7 +132,7 @@ public class LoginPanel extends JPanel {
         
         if (p != null && p.verifikasiLogin(pass)) {
             SessionManager.setCurrentUser(p);
-            // Flashy UI logic instead of blocking JOptionPane for success
+            
             txtUsername.setText("");
             txtPassword.setText("");
             mainFrame.showDashboard();

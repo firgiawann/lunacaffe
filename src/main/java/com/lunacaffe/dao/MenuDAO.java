@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MenuDAO {
-
     public List<Menu> getAllMenus() {
         List<Menu> list = new ArrayList<>();
         String sql = "SELECT * FROM menus";
@@ -38,7 +37,6 @@ public class MenuDAO {
         return list;
     }
     
-    // Tambahan Perkembangan (CRUD - Update)
     public boolean addStok(String idMenu, int qtyAdded) {
         String sql = "UPDATE menus SET stok = stok + ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -53,7 +51,6 @@ public class MenuDAO {
         }
     }
     
-    // Tambahan Perkembangan (CRUD - Update Price)
     public boolean updateHarga(String idMenu, double hargaBaru) {
         String sql = "UPDATE menus SET harga = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -66,5 +63,73 @@ public class MenuDAO {
             System.err.println("Update harga gagal: " + e.getMessage());
             return false;
         }
+    }
+
+    public boolean addMenu(Menu menu) {
+        String sql = "INSERT INTO menus (id, nama, kategori, harga, stok, image_path, is_new, is_bestseller) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, menu.getIdMenu());
+            pst.setString(2, menu.getNamaMenu());
+            pst.setString(3, menu.getKategori());
+            pst.setDouble(4, menu.getHarga());
+            pst.setInt(5, menu.getStok());
+            pst.setString(6, menu.getImagePath());
+            pst.setInt(7, menu.isNew() ? 1 : 0);
+            pst.setInt(8, menu.isBestseller() ? 1 : 0);
+            return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.err.println("Tambah menu gagal: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean updateMenu(Menu menu) {
+        String sql = "UPDATE menus SET nama = ?, kategori = ?, harga = ?, stok = ?, image_path = ?, "
+                + "is_new = ?, is_bestseller = ? WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, menu.getNamaMenu());
+            pst.setString(2, menu.getKategori());
+            pst.setDouble(3, menu.getHarga());
+            pst.setInt(4, menu.getStok());
+            pst.setString(5, menu.getImagePath());
+            pst.setInt(6, menu.isNew() ? 1 : 0);
+            pst.setInt(7, menu.isBestseller() ? 1 : 0);
+            pst.setString(8, menu.getIdMenu());
+            return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.err.println("Update menu gagal: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean deleteMenu(String idMenu) {
+        String sql = "DELETE FROM menus WHERE id = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setString(1, idMenu);
+            return pst.executeUpdate() > 0;
+        } catch (Exception e) {
+            System.err.println("Hapus menu gagal: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public String getNextMenuId() {
+        String sql = "SELECT id FROM menus WHERE id LIKE 'M-%' ORDER BY CAST(SUBSTR(id, 3) AS INTEGER) DESC LIMIT 1";
+        try (Connection conn = DatabaseConnection.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                String lastId = rs.getString(1);
+                int seq = Integer.parseInt(lastId.substring(lastId.lastIndexOf('-') + 1));
+                return String.format("M-%03d", seq + 1);
+            }
+        } catch (Exception e) {
+            System.err.println("Gagal membuat ID menu baru: " + e.getMessage());
+        }
+        return "M-001";
     }
 }

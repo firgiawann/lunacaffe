@@ -43,4 +43,8 @@ public class Menu {
     public boolean isBestseller() { return isBestseller; }
 
     public void setStok(int stok) { this.stok = stok; }
+    public void setHarga(double harga) { this.harga = harga; }
+    public void setImagePath(String imagePath) { this.imagePath = imagePath; }
+    public void setNew(boolean isNew) { this.isNew = isNew; }
+    public void setBestseller(boolean isBestseller) { this.isBestseller = isBestseller; }
 }

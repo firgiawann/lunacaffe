@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.List;
 
 public class OrderDAO {
-    
     public String getNextOrderNumber() {
         String todayString = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String expectedPrefix = "ORD-" + todayString + "-";
@@ -26,7 +25,7 @@ public class OrderDAO {
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             if (rs.next()) {
-                String lastId = rs.getString(1); // e.g. ORD-20231201-005
+                String lastId = rs.getString(1); 
                 String seqStr = lastId.substring(lastId.lastIndexOf('-') + 1);
                 int seq = Integer.parseInt(seqStr);
                 return String.format("%s%03d", expectedPrefix, seq + 1);
@@ -38,7 +37,7 @@ public class OrderDAO {
     public boolean createOrder(Pesanan pesanan) {
         String sqlOrder = "INSERT INTO orders (id, nama_pelanggan, total_harga, status) VALUES (?, ?, ?, ?)";
         String sqlDetail = "INSERT INTO order_details (order_id, menu_id, qty, subtotal) VALUES (?, ?, ?, ?)";
-        String sqlUpdateStok = "UPDATE menus SET stok = stok - ? WHERE id = ?";
+        String sqlUpdateStok = "UPDATE menus SET stok = stok - ? WHERE id = ? AND stok >= ?";
 
         Connection conn = null;
         try {
@@ -57,18 +56,21 @@ public class OrderDAO {
                  PreparedStatement pstStock = conn.prepareStatement(sqlUpdateStok)) {
                 
                 for (DetailPesanan detail : pesanan.getItems()) {
+                    pstStock.setInt(1, detail.getQty());
+                    pstStock.setString(2, detail.getMenu().getIdMenu());
+                    pstStock.setInt(3, detail.getQty());
+                    int affectedStock = pstStock.executeUpdate();
+                    if (affectedStock == 0) {
+                        throw new IllegalStateException("Stok tidak cukup untuk " + detail.getMenu().getNamaMenu());
+                    }
+
                     pstDetail.setString(1, pesanan.getIdPesanan());
                     pstDetail.setString(2, detail.getMenu().getIdMenu());
                     pstDetail.setInt(3, detail.getQty());
                     pstDetail.setDouble(4, detail.getSubtotal());
                     pstDetail.addBatch();
-
-                    pstStock.setInt(1, detail.getQty());
-                    pstStock.setString(2, detail.getMenu().getIdMenu());
-                    pstStock.addBatch();
                 }
                 pstDetail.executeBatch();
-                pstStock.executeBatch();
             }
 
             conn.commit();
@@ -123,9 +125,9 @@ public class OrderDAO {
         }
     }
     
-    // Fitur Tambahan: Export CSV Rekapitulasi berserta Grand Total 
+    
     public String exportRekapitulasiCSV(String dateString, String outputPath) {
-        // SQLite uses YYYY-MM-DD for date comparison
+        
         String sql = "SELECT id, nama_pelanggan, total_harga, created_at, status FROM orders WHERE date(created_at) = ?";
         double grandTotal = 0.0;
         int rowCount = 0;
@@ -137,7 +139,7 @@ public class OrderDAO {
              pst.setString(1, dateString);
              ResultSet rs = pst.executeQuery();
              
-             // CSV Header
+             
              pw.println("ID Pesanan,Nama Pelanggan,Waktu Order,Status,Total Harga");
              
              while (rs.next()) {
@@ -152,7 +154,7 @@ public class OrderDAO {
                  pw.printf("%s,%s,%s,%s,%.2f\n", id, nama, created, status, total);
              }
              
-             // Separator & Grand Total Footer
+             
              pw.println(",,,,");
              pw.printf("GRAND TOTAL KESELURUHAN (HARI INI),,,,%.2f\n", grandTotal);
              

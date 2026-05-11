@@ -21,7 +21,7 @@ public class DatabaseConnection {
     public static void initializeDatabase() {
         try (Connection conn = getConnection(); Statement stmt = conn.createStatement()) {
             if (conn != null) {
-                // Table Users
+                
                 String sqlUsers = "CREATE TABLE IF NOT EXISTS users ("
                         + " id VARCHAR PRIMARY KEY,"
                         + " nama VARCHAR NOT NULL,"
@@ -30,7 +30,7 @@ public class DatabaseConnection {
                         + " role VARCHAR NOT NULL)";
                 stmt.execute(sqlUsers);
 
-                // Table Menus
+                
                 String sqlMenus = "CREATE TABLE IF NOT EXISTS menus ("
                         + " id VARCHAR PRIMARY KEY,"
                         + " nama VARCHAR NOT NULL,"
@@ -42,7 +42,7 @@ public class DatabaseConnection {
                         + " is_bestseller INTEGER)";
                 stmt.execute(sqlMenus);
 
-                // Table Orders
+                
                 String sqlOrders = "CREATE TABLE IF NOT EXISTS orders ("
                         + " id VARCHAR PRIMARY KEY,"
                         + " nama_pelanggan VARCHAR,"
@@ -51,7 +51,7 @@ public class DatabaseConnection {
                         + " created_at DATETIME DEFAULT CURRENT_TIMESTAMP)";
                 stmt.execute(sqlOrders);
 
-                // Table Order Details
+                
                 String sqlOrderDetails = "CREATE TABLE IF NOT EXISTS order_details ("
                         + " id INTEGER PRIMARY KEY AUTOINCREMENT,"
                         + " order_id VARCHAR,"
@@ -62,7 +62,7 @@ public class DatabaseConnection {
                         + " FOREIGN KEY(menu_id) REFERENCES menus(id))";
                 stmt.execute(sqlOrderDetails);
 
-                // Seed Accounts
+                
                 String seedAdmin = "INSERT OR IGNORE INTO users (id, nama, username, password, role) " +
                                    "VALUES ('U-001', 'Super Admin', 'admin', '123', 'admin')";
                 stmt.execute(seedAdmin);
@@ -71,8 +71,9 @@ public class DatabaseConnection {
                                    "VALUES ('U-002', 'Kasir Depan', 'kasir1', '123', 'kasir')";
                 stmt.execute(seedKasir);
 
-                // Seed Menus via Factory
+                
                 DatabaseSeeder.seedMenus(conn);
+                DatabaseSeeder.syncMenuImagePaths(conn);
 
                 System.out.println("Database SQLite lunacaffe.db berhasil diinisialisasi.");
             }

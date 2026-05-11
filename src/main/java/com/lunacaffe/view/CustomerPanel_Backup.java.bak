@@ -98,7 +98,7 @@ public class CustomerPanel_Backup extends JPanel {
 
         catalogPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Sidebar Cart
+        
         JPanel cartPanel = new JPanel(new BorderLayout(0, 15));
         cartPanel.setPreferredSize(new Dimension(280, 0));
         cartPanel.setBackground(Color.WHITE);
@@ -178,7 +178,7 @@ public class CustomerPanel_Backup extends JPanel {
             new EmptyBorder(10, 10, 10, 10)
         ));
 
-        // Area gambar override dgn Graphics2D
+        
         JPanel imgContainer = new JPanel(new BorderLayout()) {
             @Override
             protected void paintComponent(Graphics g) {
@@ -207,7 +207,7 @@ public class CustomerPanel_Backup extends JPanel {
                 FontMetrics fm = g2.getFontMetrics();
                 
                 String iconEmoji = menu.getImagePath();
-                String textToDraw = (iconEmoji != null && !iconEmoji.isEmpty()) ? iconEmoji : "🍽️"; 
+                String textToDraw = (iconEmoji != null && !iconEmoji.isEmpty()) ? iconEmoji : "ðŸ½ï¸"; 
                 
                 int textX = (getWidth() - fm.stringWidth(textToDraw)) / 2;
                 int textY = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent() + 5;

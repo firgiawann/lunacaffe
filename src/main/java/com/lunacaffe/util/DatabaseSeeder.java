@@ -11,7 +11,7 @@ public class DatabaseSeeder {
         String countSql = "SELECT count(*) FROM menus";
         try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(countSql)) {
             if (rs.next() && rs.getInt(1) == 0) {
-                System.out.println("Tabel menu kosong. Memulai seeding menu produk dengan Icon / Emoji...");
+                System.out.println("Tabel menu kosong. Memulai seeding menu produk dengan gambar lokal...");
                 
                 String insertSql = "INSERT INTO menus (id, nama, kategori, harga, stok, image_path, is_new, is_bestseller) "
                         + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -63,39 +63,23 @@ public class DatabaseSeeder {
                     };
                     
                     for (Object[] item : menuData) {
-                        pst.setString(1, (String) item[0]);  // id
+                        pst.setString(1, (String) item[0]);  
                         String nm = (String) item[1];
-                        pst.setString(2, nm);  // nama
+                        pst.setString(2, nm);  
                         String kat = (String) item[2];
-                        pst.setString(3, kat); // kategori
-                        pst.setDouble(4, (Double) item[3]);  // harga
-                        pst.setInt(5, (Integer) item[4]);    // stok
+                        pst.setString(3, kat); 
+                        pst.setDouble(4, (Double) item[3]);  
+                        pst.setInt(5, (Integer) item[4]);    
                         
-                        // Menentukan logic Icon / Emoji berdasarkan relevansi nama atau kategori
-                        String emoji = "🍽️";
-                        if (nm.toLowerCase().contains("matcha") || nm.toLowerCase().contains("tea") || nm.toLowerCase().contains("wedang")) {
-                            emoji = "🍵";
-                        } else if (kat.contains("Hot Drink") || kat.contains("Coffee") || nm.toLowerCase().contains("hot")) {
-                            emoji = "☕";
-                        } else if (kat.contains("Cold Drink") || nm.toLowerCase().contains("iced")) {
-                            emoji = "🥤";
-                        } else if (kat.contains("Bread") || nm.toLowerCase().contains("croissant")) {
-                            emoji = "🥐";
-                        } else if (nm.toLowerCase().contains("fries") || nm.toLowerCase().contains("nachos") || nm.toLowerCase().contains("wings") || nm.toLowerCase().contains("dimsum")) {
-                            emoji = "🍟"; // Savory snacks
-                        } else if (nm.toLowerCase().contains("cake") || nm.toLowerCase().contains("tiramisu") || nm.toLowerCase().contains("brownies") || nm.toLowerCase().contains("chocolate")) {
-                            emoji = "🍰"; // Sweet snacks
-                        }
-                        
-                        pst.setString(6, emoji); // simpan emoji icon ke field image_path
-                        pst.setInt(7, (Integer) item[5]);    // is_new
-                        pst.setInt(8, (Integer) item[6]);    // is_bestseller
+                        pst.setString(6, resolveImagePath(nm, kat));
+                        pst.setInt(7, (Integer) item[5]);    
+                        pst.setInt(8, (Integer) item[6]);    
                         pst.addBatch();
                     }
                     
                     pst.executeBatch();
                     conn.commit();
-                    System.out.println("Berhasil menyisipkan 37 menu produk (Icon/Emoji).");
+                    System.out.println("Berhasil menyisipkan 37 menu produk dengan gambar.");
                 } catch (Exception ex) {
                     conn.rollback();
                     System.err.println("Gagal saat seeding menu: " + ex.getMessage());
@@ -106,5 +90,55 @@ public class DatabaseSeeder {
         } catch (Exception e) {
             System.err.println("Gagal mengecek isi tabel menu: " + e.getMessage());
         }
+    }
+
+    public static void syncMenuImagePaths(Connection conn) {
+        String selectSql = "SELECT id, nama, kategori, image_path FROM menus";
+        String updateSql = "UPDATE menus SET image_path = ? WHERE id = ?";
+
+        try (Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(selectSql);
+             PreparedStatement pst = conn.prepareStatement(updateSql)) {
+
+            while (rs.next()) {
+                String currentPath = rs.getString("image_path");
+                if (currentPath != null && currentPath.startsWith("/images/menu/")) {
+                    continue;
+                }
+
+                pst.setString(1, resolveImagePath(rs.getString("nama"), rs.getString("kategori")));
+                pst.setString(2, rs.getString("id"));
+                pst.addBatch();
+            }
+
+            pst.executeBatch();
+        } catch (Exception e) {
+            System.err.println("Gagal sinkronisasi gambar menu: " + e.getMessage());
+        }
+    }
+
+    private static String resolveImagePath(String nama, String kategori) {
+        String lowerName = nama == null ? "" : nama.toLowerCase();
+        String lowerCategory = kategori == null ? "" : kategori.toLowerCase();
+
+        if (lowerName.contains("matcha") || lowerName.contains("tea") || lowerName.contains("wedang")) {
+            return "/images/menu/matcha.jpg";
+        }
+        if (lowerName.contains("chocolate") || lowerName.contains("mocha") || lowerName.contains("brownies")
+                || lowerName.contains("cake") || lowerName.contains("tiramisu")) {
+            return "/images/menu/hot_chocolate.jpg";
+        }
+        if (lowerCategory.contains("bread") || lowerName.contains("croissant") || lowerName.contains("chocolatine")) {
+            return "/images/menu/croissant.jpg";
+        }
+        if (lowerName.contains("fries") || lowerName.contains("nachos") || lowerName.contains("wings")
+                || lowerName.contains("dimsum") || lowerCategory.contains("snack")) {
+            return "/images/menu/fries.jpg";
+        }
+        if (lowerCategory.contains("cold") || lowerName.contains("iced") || lowerName.contains("frappe")
+                || lowerName.contains("jelly")) {
+            return "/images/menu/latte_cold.jpg";
+        }
+        return "/images/menu/espresso.jpg";
     }
 }

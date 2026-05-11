@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Visual - LunaCaffe POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        paper: "#F8F5EF",
+                        plum: "#2A113A",
+                        amber: "#C89218",
+                        moss: "#2F6F5E",
+                        line: "#DED6C9",
+                        ink: "#18202A"
+                    },
+                    fontFamily: {
+                        sans: ["Inter", "Segoe UI", "Arial", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        body { font-family: Inter, Segoe UI, Arial, sans-serif; background: #F8F5EF; color: #18202A; }
+        .panel { background: rgba(255,255,255,.88); border: 1px solid #DED6C9; box-shadow: 0 14px 34px rgba(24,32,42,.07); }
+        .menu-img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+        .tab-active { background: #2A113A; color: white; }
+        .tab-idle { background: white; color: #2A113A; border: 1px solid #DED6C9; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="border-b border-line bg-white">
+        <div class="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-5 py-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="flex h-11 w-11 items-center justify-center rounded bg-plum font-extrabold text-white">LC</div>
+                <div>
+                    <h1 class="text-lg font-extrabold text-plum">LunaCaffe POS</h1>
+                    <p class="text-xs font-semibold text-slate-500">Demo visual berbasis web</p>
+                </div>
+            </a>
+            <div class="flex gap-2">
+                <button id="tabCustomer" onclick="showPage('customer')" class="rounded px-4 py-2 text-sm font-extrabold tab-active">Pelanggan</button>
+                <button id="tabStaff" onclick="showPage('staff')" class="rounded px-4 py-2 text-sm font-extrabold tab-idle">Kasir dan Admin</button>
+            </div>
+        </div>
+    </header>
+
+    <main class="mx-auto max-w-7xl px-5 py-6">
+        <section class="mb-5 rounded border border-amber/30 bg-amber/10 p-4 text-sm leading-6 text-slate-700">
+            Demo ini hanya representasi visual. Aplikasi utama tetap berjalan sebagai Java Swing desktop dengan SQLite lokal.
+        </section>
+
+        <section id="customerPage" class="grid gap-5 lg:grid-cols-[1fr_360px]">
+            <div class="panel rounded p-5">
+                <div class="flex flex-col gap-4 border-b border-line pb-5 md:flex-row md:items-end md:justify-between">
+                    <div>
+                        <h2 class="text-2xl font-extrabold text-plum">Katalog Menu</h2>
+                        <p class="mt-1 text-sm text-slate-500">Cari, filter, urutkan, lalu masukkan produk ke keranjang.</p>
+                    </div>
+                    <div class="grid gap-2 sm:grid-cols-3">
+                        <input id="searchInput" oninput="renderMenus()" class="rounded border border-line px-3 py-2 text-sm outline-none focus:border-plum" placeholder="Cari menu">
+                        <select id="categoryInput" onchange="renderMenus()" class="rounded border border-line px-3 py-2 text-sm outline-none focus:border-plum">
+                            <option>Semua</option>
+                            <option>Coffee</option>
+                            <option>Hot Drink</option>
+                            <option>Cold Drink</option>
+                            <option>Non-Coffee</option>
+                            <option>Snack</option>
+                            <option>Bread</option>
+                        </select>
+                        <select id="sortInput" onchange="renderMenus()" class="rounded border border-line px-3 py-2 text-sm outline-none focus:border-plum">
+                            <option>A-Z</option>
+                            <option>Harga Termurah</option>
+                            <option>Harga Termahal</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="menuGrid" class="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-3"></div>
+            </div>
+
+            <aside class="panel flex min-h-[560px] flex-col rounded">
+                <div class="border-b border-line p-5">
+                    <h2 class="text-xl font-extrabold text-plum">Keranjang</h2>
+                    <p class="text-sm text-slate-500">Kontrol kuantitas sesuai sistem saat ini.</p>
+                </div>
+                <div id="cartList" class="flex-1 space-y-3 overflow-y-auto p-5"></div>
+                <div class="border-t border-line p-5">
+                    <div class="mb-4 flex items-center justify-between">
+                        <span class="font-bold text-slate-500">Total</span>
+                        <span id="cartTotal" class="text-2xl font-extrabold text-plum">Rp 0</span>
+                    </div>
+                    <button onclick="checkout()" class="w-full rounded bg-moss px-4 py-3 text-sm font-extrabold text-white hover:bg-[#24584B]">Checkout dan Cetak Struk</button>
+                </div>
+            </aside>
+        </section>
+
+        <section id="staffPage" class="hidden">
+            <div class="mb-5 grid gap-5 lg:grid-cols-[260px_1fr]">
+                <aside class="panel rounded p-5">
+                    <h2 class="text-lg font-extrabold text-plum">Portal Pegawai</h2>
+                    <p class="mt-1 text-sm text-slate-500">Simulasi hak akses role.</p>
+                    <label class="mt-5 block text-xs font-extrabold uppercase tracking-wider text-slate-500">Role aktif</label>
+                    <select id="roleInput" onchange="renderStaff()" class="mt-2 w-full rounded border border-line px-3 py-2 text-sm outline-none focus:border-plum">
+                        <option value="admin">Admin</option>
+                        <option value="kasir">Kasir</option>
+                    </select>
+                    <div class="mt-5 rounded bg-paper p-4 text-sm leading-6 text-slate-700">
+                        <div><strong>Admin:</strong> admin / 123</div>
+                        <div><strong>Kasir:</strong> kasir1 / 123</div>
+                    </div>
+                </aside>
+
+                <div class="grid gap-5">
+                    <section class="panel rounded p-5">
+                        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-xl font-extrabold text-plum">Pesanan Live</h2>
+                                <p class="text-sm text-slate-500">Pesanan dari kiosk masuk ke tabel ini.</p>
+                            </div>
+                            <button onclick="exportCsvDemo()" class="rounded border border-line bg-white px-4 py-2 text-sm font-extrabold text-plum hover:border-plum">Simulasi Export CSV</button>
+                        </div>
+                        <div class="overflow-x-auto rounded border border-line">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-plum text-white">
+                                    <tr>
+                                        <th class="p-3">ID Pesanan</th>
+                                        <th class="p-3">Nama</th>
+                                        <th class="p-3">Total</th>
+                                        <th class="p-3">Status</th>
+                                        <th class="p-3">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="orderRows" class="divide-y divide-line bg-white"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="adminProductPanel" class="panel rounded p-5">
+                        <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <h2 class="text-xl font-extrabold text-plum">Kelola Produk</h2>
+                                <p class="text-sm text-slate-500">Mewakili fitur tambah, ubah, hapus, restok, harga, gambar, NEW, dan BEST.</p>
+                            </div>
+                            <div class="flex flex-wrap gap-2">
+                                <button onclick="addDemoProduct()" class="rounded bg-plum px-4 py-2 text-sm font-extrabold text-white">Tambah Produk Demo</button>
+                                <button onclick="restockFirst()" class="rounded border border-line bg-white px-4 py-2 text-sm font-extrabold text-plum">Restok +5</button>
+                                <button onclick="updateFirstPrice()" class="rounded border border-line bg-white px-4 py-2 text-sm font-extrabold text-plum">Ubah Harga</button>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto rounded border border-line">
+                            <table class="w-full text-left text-sm">
+                                <thead class="bg-plum text-white">
+                                    <tr>
+                                        <th class="p-3">ID</th>
+                                        <th class="p-3">Produk</th>
+                                        <th class="p-3">Kategori</th>
+                                        <th class="p-3">Harga</th>
+                                        <th class="p-3">Stok</th>
+                                        <th class="p-3">Label</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productRows" class="divide-y divide-line bg-white"></tbody>
+                            </table>
+                        </div>
+                    </section>
+
+                    <section id="adminAccountPanel" class="panel rounded p-5">
+                        <h2 class="text-xl font-extrabold text-plum">Kelola Akun Staff</h2>
+                        <div class="mt-4 grid gap-3 md:grid-cols-2">
+                            <div class="rounded border border-line bg-white p-4">
+                                <div class="font-extrabold text-plum">Super Admin</div>
+                                <div class="mt-1 text-sm text-slate-600">username: admin, role: admin</div>
+                            </div>
+                            <div class="rounded border border-line bg-white p-4">
+                                <div class="font-extrabold text-plum">Kasir Depan</div>
+                                <div class="mt-1 text-sm text-slate-600">username: kasir1, role: kasir</div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="receiptModal" class="fixed inset-0 hidden items-center justify-center bg-black/50 p-5">
+        <div class="max-w-sm rounded bg-white p-6 shadow-2xl">
+            <h2 class="text-center text-2xl font-extrabold text-plum">LUNACAFFE</h2>
+            <p class="mt-1 text-center text-sm text-slate-500">Self-Service Kiosk Receipt</p>
+            <div class="my-5 rounded bg-paper p-4 text-center">
+                <div class="text-xs font-bold uppercase tracking-wider text-slate-500">Nomor Antrean</div>
+                <div id="receiptId" class="mt-2 font-mono text-2xl font-extrabold text-plum">ORD-000</div>
+            </div>
+            <div id="receiptBody" class="text-sm leading-7 text-slate-700"></div>
+            <button onclick="closeReceipt()" class="mt-6 w-full rounded bg-plum px-4 py-3 text-sm font-extrabold text-white">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        let menus = [
+            { id: "M-001", nama: "Espresso", kategori: "Coffee", harga: 15000, stok: 100, img: "src/main/resources/images/menu/espresso.jpg", label: "" },
+            { id: "M-005", nama: "Hot Caramel Macchiato", kategori: "Hot Drink", harga: 28000, stok: 40, img: "src/main/resources/images/menu/espresso.jpg", label: "NEW, BEST" },
+            { id: "M-011", nama: "Iced Latte", kategori: "Cold Drink", harga: 27000, stok: 60, img: "src/main/resources/images/menu/latte_cold.jpg", label: "BEST" },
+            { id: "M-021", nama: "Matcha Latte Hot", kategori: "Non-Coffee", harga: 28000, stok: 40, img: "src/main/resources/images/menu/matcha.jpg", label: "BEST" },
+            { id: "M-028", nama: "Butter Croissant", kategori: "Bread", harga: 20000, stok: 20, img: "src/main/resources/images/menu/croissant.jpg", label: "BEST" },
+            { id: "M-034", nama: "French Fries", kategori: "Snack", harga: 20000, stok: 50, img: "src/main/resources/images/menu/fries.jpg", label: "BEST" },
+            { id: "M-019", nama: "Hot Chocolate", kategori: "Non-Coffee", harga: 25000, stok: 60, img: "src/main/resources/images/menu/hot_chocolate.jpg", label: "BEST" },
+            { id: "M-030", nama: "Almond Croissant", kategori: "Bread", harga: 25000, stok: 15, img: "src/main/resources/images/menu/croissant.jpg", label: "NEW, BEST" }
+        ];
+        let cart = {};
+        let orders = [
+            { id: "ORD-20260512-001", nama: "DEMO", total: 45000, status: "Menunggu" }
+        ];
+        let orderSeq = 2;
+
+        function rupiah(value) {
+            return "Rp " + value.toLocaleString("id-ID");
+        }
+
+        function showPage(page) {
+            document.getElementById("customerPage").classList.toggle("hidden", page !== "customer");
+            document.getElementById("staffPage").classList.toggle("hidden", page !== "staff");
+            document.getElementById("tabCustomer").className = page === "customer" ? "rounded px-4 py-2 text-sm font-extrabold tab-active" : "rounded px-4 py-2 text-sm font-extrabold tab-idle";
+            document.getElementById("tabStaff").className = page === "staff" ? "rounded px-4 py-2 text-sm font-extrabold tab-active" : "rounded px-4 py-2 text-sm font-extrabold tab-idle";
+        }
+
+        function filteredMenus() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const category = document.getElementById("categoryInput").value;
+            const sort = document.getElementById("sortInput").value;
+            let data = menus.filter(item => {
+                const matchQuery = item.nama.toLowerCase().includes(query);
+                const matchCategory = category === "Semua" || item.kategori === category;
+                return matchQuery && matchCategory;
+            });
+            if (sort === "Harga Termurah") data.sort((a, b) => a.harga - b.harga);
+            if (sort === "Harga Termahal") data.sort((a, b) => b.harga - a.harga);
+            if (sort === "A-Z") data.sort((a, b) => a.nama.localeCompare(b.nama));
+            return data;
+        }
+
+        function renderMenus() {
+            const grid = document.getElementById("menuGrid");
+            const data = filteredMenus();
+            if (data.length === 0) {
+                grid.innerHTML = `<div class="col-span-full rounded border border-line bg-white p-8 text-center text-sm font-bold text-slate-500">Menu tidak ditemukan.</div>`;
+                return;
+            }
+            grid.innerHTML = data.map(item => {
+                const qty = cart[item.id] || 0;
+                const available = item.stok - qty;
+                const disabled = available <= 0;
+                return `
+                    <article class="overflow-hidden rounded border border-line bg-white">
+                        <img class="menu-img" src="${item.img}" alt="${item.nama}">
+                        <div class="p-4">
+                            <div class="flex items-start justify-between gap-3">
+                                <div>
+                                    <h3 class="font-extrabold text-plum">${item.nama}</h3>
+                                    <p class="mt-1 text-xs font-bold uppercase tracking-wider text-slate-500">${item.kategori}</p>
+                                </div>
+                                ${item.label ? `<span class="rounded bg-amber/15 px-2 py-1 text-[10px] font-extrabold text-amber">${item.label}</span>` : ""}
+                            </div>
+                            <div class="mt-4 flex items-center justify-between">
+                                <span class="font-extrabold text-moss">${rupiah(item.harga)}</span>
+                                <span class="text-xs font-bold text-slate-500">Stok ${available}</span>
+                            </div>
+                            <button ${disabled ? "disabled" : ""} onclick="addToCart('${item.id}')" class="mt-4 w-full rounded px-4 py-2 text-sm font-extrabold ${disabled ? "bg-slate-100 text-slate-400" : "bg-plum text-white hover:bg-[#3E1D52]"}">${disabled ? "Habis" : "Tambah"}</button>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        function addToCart(id) {
+            const item = menus.find(menu => menu.id === id);
+            const qty = cart[id] || 0;
+            if (qty >= item.stok) return;
+            cart[id] = qty + 1;
+            renderMenus();
+            renderCart();
+        }
+
+        function decreaseCart(id) {
+            if (!cart[id]) return;
+            cart[id] -= 1;
+            if (cart[id] <= 0) delete cart[id];
+            renderMenus();
+            renderCart();
+        }
+
+        function removeCart(id) {
+            delete cart[id];
+            renderMenus();
+            renderCart();
+        }
+
+        function cartItems() {
+            return Object.keys(cart).map(id => {
+                const menu = menus.find(item => item.id === id);
+                return { ...menu, qty: cart[id], subtotal: menu.harga * cart[id] };
+            });
+        }
+
+        function renderCart() {
+            const list = document.getElementById("cartList");
+            const items = cartItems();
+            const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+            document.getElementById("cartTotal").innerText = rupiah(total);
+            if (items.length === 0) {
+                list.innerHTML = `<div class="rounded border border-dashed border-line bg-white p-6 text-center text-sm font-bold text-slate-400">Keranjang masih kosong.</div>`;
+                return;
+            }
+            list.innerHTML = items.map(item => `
+                <div class="rounded border border-line bg-white p-4">
+                    <div class="flex items-start justify-between gap-3">
+                        <div>
+                            <div class="font-extrabold text-plum">${item.nama}</div>
+                            <div class="mt-1 text-sm text-slate-500">${item.qty} x ${rupiah(item.harga)}</div>
+                        </div>
+                        <div class="font-extrabold text-moss">${rupiah(item.subtotal)}</div>
+                    </div>
+                    <div class="mt-3 flex gap-2">
+                        <button onclick="decreaseCart('${item.id}')" class="rounded border border-line px-3 py-1 text-sm font-extrabold text-plum">-</button>
+                        <button onclick="addToCart('${item.id}')" class="rounded border border-line px-3 py-1 text-sm font-extrabold text-plum">+</button>
+                        <button onclick="removeCart('${item.id}')" class="rounded border border-red-200 px-3 py-1 text-sm font-extrabold text-red-600">x</button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        function checkout() {
+            const items = cartItems();
+            if (items.length === 0) {
+                alert("Pilih minimal satu produk terlebih dahulu.");
+                return;
+            }
+            const nama = prompt("Masukkan nama pemesan:", "Guest") || "Guest";
+            const id = "ORD-20260512-" + String(orderSeq).padStart(3, "0");
+            const total = items.reduce((sum, item) => sum + item.subtotal, 0);
+            items.forEach(item => {
+                const menu = menus.find(menuItem => menuItem.id === item.id);
+                menu.stok -= item.qty;
+            });
+            orders.unshift({ id, nama: nama.toUpperCase(), total, status: "Menunggu" });
+            orderSeq += 1;
+            document.getElementById("receiptId").innerText = id;
+            document.getElementById("receiptBody").innerHTML = `
+                <div><strong>Nama:</strong> ${nama.toUpperCase()}</div>
+                <div><strong>Total:</strong> ${rupiah(total)}</div>
+                <div class="mt-3 border-t border-line pt-3">${items.map(item => `${item.nama} x${item.qty}`).join("<br>")}</div>
+            `;
+            cart = {};
+            renderMenus();
+            renderCart();
+            renderOrders();
+            document.getElementById("receiptModal").classList.remove("hidden");
+            document.getElementById("receiptModal").classList.add("flex");
+        }
+
+        function closeReceipt() {
+            document.getElementById("receiptModal").classList.add("hidden");
+            document.getElementById("receiptModal").classList.remove("flex");
+        }
+
+        function renderOrders() {
+            document.getElementById("orderRows").innerHTML = orders.map(order => `
+                <tr>
+                    <td class="p-3 font-mono font-bold text-plum">${order.id}</td>
+                    <td class="p-3">${order.nama}</td>
+                    <td class="p-3 font-bold text-moss">${rupiah(order.total)}</td>
+                    <td class="p-3">${order.status}</td>
+                    <td class="p-3"><button onclick="markDone('${order.id}')" class="rounded bg-plum px-3 py-2 text-xs font-extrabold text-white">Tandai Selesai</button></td>
+                </tr>
+            `).join("");
+        }
+
+        function markDone(id) {
+            const order = orders.find(item => item.id === id);
+            if (order) order.status = "Selesai";
+            renderOrders();
+        }
+
+        function renderStaff() {
+            const role = document.getElementById("roleInput").value;
+            const adminOnly = role === "admin";
+            document.getElementById("adminProductPanel").classList.toggle("hidden", !adminOnly);
+            document.getElementById("adminAccountPanel").classList.toggle("hidden", !adminOnly);
+            renderOrders();
+            renderProducts();
+        }
+
+        function renderProducts() {
+            document.getElementById("productRows").innerHTML = menus.map(item => `
+                <tr>
+                    <td class="p-3 font-mono font-bold text-plum">${item.id}</td>
+                    <td class="p-3">${item.nama}</td>
+                    <td class="p-3">${item.kategori}</td>
+                    <td class="p-3 font-bold text-moss">${rupiah(item.harga)}</td>
+                    <td class="p-3">${item.stok}</td>
+                    <td class="p-3">${item.label || "-"}</td>
+                </tr>
+            `).join("");
+        }
+
+        function addDemoProduct() {
+            if (menus.some(item => item.id === "M-099")) return;
+            menus.push({ id: "M-099", nama: "Signature Affogato", kategori: "Coffee", harga: 32000, stok: 25, img: "src/main/resources/images/menu/espresso.jpg", label: "NEW" });
+            renderMenus();
+            renderProducts();
+        }
+
+        function restockFirst() {
+            menus[0].stok += 5;
+            renderMenus();
+            renderProducts();
+        }
+
+        function updateFirstPrice() {
+            menus[0].harga = menus[0].harga === 15000 ? 17000 : 15000;
+            renderMenus();
+            renderProducts();
+        }
+
+        function exportCsvDemo() {
+            alert("Simulasi export CSV: data pesanan harian siap direkap.");
+        }
+
+        renderMenus();
+        renderCart();
+        renderStaff();
+    </script>
+</body>
+</html>

@@ -13,11 +13,13 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
 public class DashboardPanel extends JPanel {
+    private static final DecimalFormat RUPIAH = new DecimalFormat("#,##0");
     private MainFrame mainFrame;
     private JLabel lblUserRole;
     
@@ -65,15 +67,15 @@ public class DashboardPanel extends JPanel {
         profilePanel.add(lblLoginAs);
         profilePanel.add(lblUserRole);
 
-        // Sidebar menus
+        
         JPanel menuPanel = new JPanel();
         menuPanel.setLayout(new BoxLayout(menuPanel, BoxLayout.Y_AXIS));
         menuPanel.setOpaque(false);
 
-        btnPesananLive = createSidebarMenu("🗂️ Pesanan Live");
-        btnRekapitulasi = createSidebarMenu("📊 Rekap Harian");
-        btnKelolaMenu = createSidebarMenu("📦 Kelola Stok Menu");
-        btnKelolaAkun = createSidebarMenu("⚙️ Kelola Akun Staff");
+        btnPesananLive = createSidebarMenu("Pesanan Live");
+        btnRekapitulasi = createSidebarMenu("Rekap Harian");
+        btnKelolaMenu = createSidebarMenu("Kelola Produk");
+        btnKelolaAkun = createSidebarMenu("Kelola Akun Staff");
         
         btnPesananLive.addActionListener(e -> { contentCardLayout.show(mainContentArea, "LIVE_ORDER"); loadLiveOrders(); });
         btnRekapitulasi.addActionListener(e -> contentCardLayout.show(mainContentArea, "REKAP"));
@@ -88,7 +90,7 @@ public class DashboardPanel extends JPanel {
         menuPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         menuPanel.add(btnKelolaAkun);
 
-        JButton btnLogout = new JButton("🚪 Log Out");
+        JButton btnLogout = new JButton("Log Out");
         btnLogout.setBackground(Color.decode("#8A2E3B"));
         btnLogout.setForeground(Color.WHITE);
         btnLogout.setFocusPainted(false);
@@ -106,7 +108,7 @@ public class DashboardPanel extends JPanel {
         bottomSidebar.add(btnLogout, BorderLayout.CENTER);
         sidebar.add(bottomSidebar, BorderLayout.SOUTH);
 
-        // Content Area setup
+        
         contentCardLayout = new CardLayout();
         mainContentArea = new JPanel(contentCardLayout);
         mainContentArea.setBackground(MainFrame.COLOR_BACKGROUND);
@@ -145,7 +147,7 @@ public class DashboardPanel extends JPanel {
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitle.setForeground(MainFrame.COLOR_PRIMARY);
         
-        JButton btnRefresh = new JButton("🔄 Perbarui Tabel");
+        JButton btnRefresh = new JButton("Perbarui Tabel");
         btnRefresh.setBackground(Color.WHITE);
         btnRefresh.setFocusPainted(false);
         btnRefresh.addActionListener(e -> loadLiveOrders());
@@ -187,17 +189,35 @@ public class DashboardPanel extends JPanel {
 
         JPanel tableHeader = new JPanel(new BorderLayout());
         tableHeader.setOpaque(false);
-        JLabel lblTitle = new JLabel("Inventory & Stok Gudang");
+        JLabel lblTitle = new JLabel("Kelola Produk Menu");
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitle.setForeground(MainFrame.COLOR_PRIMARY);
         
-        JButton btnTambahStok = new JButton("📥 Inflow (Restok)");
+        JButton btnTambahProduk = new JButton("Tambah Produk");
+        btnTambahProduk.setBackground(MainFrame.COLOR_PRIMARY);
+        btnTambahProduk.setForeground(Color.WHITE);
+        btnTambahProduk.setFocusPainted(false);
+        btnTambahProduk.addActionListener(e -> addMenuAction());
+
+        JButton btnEditProduk = new JButton("Ubah Produk");
+        btnEditProduk.setBackground(Color.decode("#5D6D7E"));
+        btnEditProduk.setForeground(Color.WHITE);
+        btnEditProduk.setFocusPainted(false);
+        btnEditProduk.addActionListener(e -> editMenuAction());
+
+        JButton btnHapusProduk = new JButton("Hapus Produk");
+        btnHapusProduk.setBackground(Color.decode("#C0392B"));
+        btnHapusProduk.setForeground(Color.WHITE);
+        btnHapusProduk.setFocusPainted(false);
+        btnHapusProduk.addActionListener(e -> deleteMenuAction());
+
+        JButton btnTambahStok = new JButton("Restok");
         btnTambahStok.setBackground(Color.decode("#2E8B57")); 
         btnTambahStok.setForeground(Color.WHITE);
         btnTambahStok.setFocusPainted(false);
         btnTambahStok.addActionListener(e -> addStockAction());
         
-        JButton btnAturHarga = new JButton("🏷️ Ubah Harga");
+        JButton btnAturHarga = new JButton("Ubah Harga");
         btnAturHarga.setBackground(Color.decode("#F39C12")); 
         btnAturHarga.setForeground(Color.WHITE);
         btnAturHarga.setFocusPainted(false);
@@ -205,13 +225,16 @@ public class DashboardPanel extends JPanel {
 
         JPanel actionPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         actionPanel.setOpaque(false);
+        actionPanel.add(btnHapusProduk);
+        actionPanel.add(btnEditProduk);
         actionPanel.add(btnAturHarga);
         actionPanel.add(btnTambahStok);
+        actionPanel.add(btnTambahProduk);
 
         tableHeader.add(lblTitle, BorderLayout.WEST);
         tableHeader.add(actionPanel, BorderLayout.EAST);
 
-        String[] cols = {"ID Menu", "Nama Produk", "Kategori", "Harga Dasar", "Sisa Stok Fisik"};
+        String[] cols = {"ID Menu", "Nama Produk", "Kategori", "Harga", "Stok", "Gambar", "Label"};
         tMenuModel = new DefaultTableModel(cols, 0);
         tableMenu = new JTable(tMenuModel) {
             public boolean isCellEditable(int row, int column) { return false; }
@@ -228,7 +251,7 @@ public class DashboardPanel extends JPanel {
         return contentArea;
     }
     
-    // PERKEMBANGAN FINAL: FITUR KELOLA AKUN ADMIN
+    
     private JPanel buildKelolaAkunPanel() {
         JPanel contentArea = new JPanel(new BorderLayout(20, 20));
         contentArea.setBackground(Color.WHITE);
@@ -240,13 +263,13 @@ public class DashboardPanel extends JPanel {
         lblTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
         lblTitle.setForeground(MainFrame.COLOR_PRIMARY);
         
-        JButton btnTambahKasir = new JButton("➕ Daftarkan Akun Baru");
+        JButton btnTambahKasir = new JButton("Daftarkan Akun Baru");
         btnTambahKasir.setBackground(MainFrame.COLOR_PRIMARY); 
         btnTambahKasir.setForeground(Color.WHITE);
         btnTambahKasir.setFocusPainted(false);
         btnTambahKasir.addActionListener(e -> addKasirAction());
         
-        JButton btnHapusKasir = new JButton("🗑️ Blokir & Hapus Akun");
+        JButton btnHapusKasir = new JButton("Blokir & Hapus Akun");
         btnHapusKasir.setBackground(Color.decode("#C0392B")); 
         btnHapusKasir.setForeground(Color.WHITE);
         btnHapusKasir.setFocusPainted(false);
@@ -297,7 +320,7 @@ public class DashboardPanel extends JPanel {
             new EmptyBorder(10, 20, 20, 20)
         ));
 
-        JLabel info = new JLabel("<html><div style='text-align: center;'><h2>📄 CSV EXPORTER</h2>Aplikasi akan mengalkulasi total pendapatan penjualan yang telah bertanda <b style='color:green'>Selesai</b> dari awal <i>Shift</i> hari ini untuk dipindahkan ke Desktop Anda dalam format Microsoft Excel/CSV.</div></html>");
+        JLabel info = new JLabel("<html><div style='text-align: center;'><h2>CSV EXPORTER</h2>Aplikasi akan mengalkulasi total pendapatan penjualan yang telah bertanda <b style='color:green'>Selesai</b> dari awal <i>Shift</i> hari ini untuk dipindahkan ke Desktop Anda dalam format Microsoft Excel/CSV.</div></html>");
         info.setAlignmentX(Component.CENTER_ALIGNMENT);
         
         JButton btnExport = new JButton("Ekspor (Klik 1x Saja)");
@@ -332,7 +355,7 @@ public class DashboardPanel extends JPanel {
             lblUserRole.setText(SessionManager.getCurrentUser().getNama() + " (" + SessionManager.getCurrentUser().getRole() + ")");
             String role = SessionManager.getCurrentUser().getRole();
             
-            // ROLE BASED ACCESS CONTROL (Kasir disembunyikan akses menunya!)
+            
             if ("kasir".equalsIgnoreCase(role)) {
                 if(btnKelolaMenu != null) btnKelolaMenu.setVisible(false);
                 if(btnKelolaAkun != null) btnKelolaAkun.setVisible(false);
@@ -353,7 +376,7 @@ public class DashboardPanel extends JPanel {
             tModel.addRow(new Object[]{
                 p.getIdPesanan(),
                 p.getNamaPelanggan(),
-                "Rp " + p.getTotalHarga(),
+                formatRupiah(p.getTotalHarga()),
                 p.getStatus()
             });
         }
@@ -368,8 +391,10 @@ public class DashboardPanel extends JPanel {
                 m.getIdMenu(),
                 m.getNamaMenu(),
                 m.getKategori(),
-                m.getHarga(),
-                m.getStok()
+                formatRupiah(m.getHarga()),
+                m.getStok(),
+                m.getImagePath(),
+                buildMenuLabel(m)
             });
         }
     }
@@ -384,12 +409,152 @@ public class DashboardPanel extends JPanel {
                 p.getNama(),
                 p.getUsername(),
                 p.getRole().toUpperCase(),
-                "***" // Hide pass logic if needed, but PRD standard is textual, let's just show it for debug
+                "***" 
             });
         }
     }
+
+    private String buildMenuLabel(Menu menu) {
+        if (menu.isNew() && menu.isBestseller()) return "NEW, BEST";
+        if (menu.isNew()) return "NEW";
+        if (menu.isBestseller()) return "BEST";
+        return "-";
+    }
+
+    private String formatRupiah(double value) {
+        return "Rp " + RUPIAH.format(value).replace(",", ".");
+    }
+
+    private Menu getSelectedMenu() {
+        int row = tableMenu.getSelectedRow();
+        if (row < 0) {
+            JOptionPane.showMessageDialog(this, "Pilih produk di tabel terlebih dahulu.");
+            return null;
+        }
+
+        String idMenu = (String) tMenuModel.getValueAt(row, 0);
+        for (Menu menu : new MenuDAO().getAllMenus()) {
+            if (menu.getIdMenu().equals(idMenu)) {
+                return menu;
+            }
+        }
+
+        JOptionPane.showMessageDialog(this, "Produk tidak ditemukan di database.");
+        return null;
+    }
+
+    private void addMenuAction() {
+        Menu menu = showMenuDialog(null);
+        if (menu == null) return;
+
+        if (new MenuDAO().addMenu(menu)) {
+            loadMenuAdmin();
+            JOptionPane.showMessageDialog(this, "Produk berhasil ditambahkan.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal menambahkan produk. Periksa ID/nama dan database.", "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void editMenuAction() {
+        Menu selected = getSelectedMenu();
+        if (selected == null) return;
+
+        Menu edited = showMenuDialog(selected);
+        if (edited == null) return;
+
+        if (new MenuDAO().updateMenu(edited)) {
+            loadMenuAdmin();
+            JOptionPane.showMessageDialog(this, "Produk berhasil diperbarui.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal memperbarui produk.", "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void deleteMenuAction() {
+        Menu selected = getSelectedMenu();
+        if (selected == null) return;
+
+        int confirm = JOptionPane.showConfirmDialog(
+            this,
+            "Hapus produk " + selected.getNamaMenu() + " dari database?",
+            "Konfirmasi Hapus Produk",
+            JOptionPane.YES_NO_OPTION
+        );
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        if (new MenuDAO().deleteMenu(selected.getIdMenu())) {
+            loadMenuAdmin();
+            JOptionPane.showMessageDialog(this, "Produk berhasil dihapus.");
+        } else {
+            JOptionPane.showMessageDialog(this, "Gagal menghapus produk.", "Gagal", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private Menu showMenuDialog(Menu existing) {
+        boolean isEdit = existing != null;
+        JTextField idField = new JTextField(isEdit ? existing.getIdMenu() : new MenuDAO().getNextMenuId());
+        idField.setEditable(!isEdit);
+
+        JTextField namaField = new JTextField(isEdit ? existing.getNamaMenu() : "");
+        JComboBox<String> kategoriField = new JComboBox<>(new String[]{"Coffee", "Hot Drink", "Cold Drink", "Non-Coffee", "Snack", "Bread"});
+        if (isEdit) kategoriField.setSelectedItem(existing.getKategori());
+
+        JTextField hargaField = new JTextField(isEdit ? String.valueOf((int) existing.getHarga()) : "");
+        JTextField stokField = new JTextField(isEdit ? String.valueOf(existing.getStok()) : "");
+
+        JComboBox<String> imageField = new JComboBox<>(new String[]{
+            "/images/menu/espresso.jpg",
+            "/images/menu/latte_cold.jpg",
+            "/images/menu/matcha.jpg",
+            "/images/menu/croissant.jpg",
+            "/images/menu/fries.jpg",
+            "/images/menu/hot_chocolate.jpg"
+        });
+        imageField.setEditable(true);
+        if (isEdit) imageField.setSelectedItem(existing.getImagePath());
+
+        JCheckBox newField = new JCheckBox("Label NEW", isEdit && existing.isNew());
+        JCheckBox bestField = new JCheckBox("Label BESTSELLER", isEdit && existing.isBestseller());
+
+        Object[] message = {
+            "ID Menu:", idField,
+            "Nama Produk:", namaField,
+            "Kategori:", kategoriField,
+            "Harga:", hargaField,
+            "Stok:", stokField,
+            "Gambar (resource path atau file lokal):", imageField,
+            newField,
+            bestField
+        };
+
+        int option = JOptionPane.showConfirmDialog(this, message, isEdit ? "Ubah Produk" : "Tambah Produk", JOptionPane.OK_CANCEL_OPTION);
+        if (option != JOptionPane.OK_OPTION) return null;
+
+        try {
+            String id = idField.getText().trim();
+            String nama = namaField.getText().trim();
+            String kategori = ((String) kategoriField.getSelectedItem()).trim();
+            double harga = parseMoney(hargaField.getText());
+            int stok = Integer.parseInt(stokField.getText().trim());
+            String imagePath = String.valueOf(imageField.getSelectedItem()).trim();
+
+            if (id.isEmpty() || nama.isEmpty() || harga <= 0 || stok < 0 || imagePath.isEmpty()) {
+                throw new IllegalArgumentException("Data produk belum lengkap.");
+            }
+
+            return new Menu(id, nama, kategori, harga, stok, imagePath, newField.isSelected(), bestField.isSelected());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Input produk tidak valid: " + e.getMessage(), "Validasi", JOptionPane.WARNING_MESSAGE);
+            return null;
+        }
+    }
+
+    private double parseMoney(String raw) {
+        String normalized = raw.trim().replace(".", "").replace(",", ".");
+        return Double.parseDouble(normalized);
+    }
     
-    // OPERASIONAL AKUN
+    
     private void addKasirAction() {
         JTextField idField = new JTextField();
         JTextField namaField = new JTextField();
@@ -421,7 +586,7 @@ public class DashboardPanel extends JPanel {
              return;
         }
         String idUser = (String) tAkunModel.getValueAt(row, 0);
-        if (idUser.equals("USR-001") || idUser.equals(SessionManager.getCurrentUser().getId())) {
+        if (idUser.equals("U-001") || idUser.equals("USR-001") || idUser.equals(SessionManager.getCurrentUser().getId())) {
              JOptionPane.showMessageDialog(this, "Waduh, Anda tidak dapat memblokir/menghapus Raja Admin (SuperUser) atau diri Anda sendiri!");
              return;
         }
@@ -466,10 +631,16 @@ public class DashboardPanel extends JPanel {
         if(input != null && !input.isEmpty()) {
             try {
                 int add = Integer.parseInt(input);
+                if (add <= 0) {
+                    JOptionPane.showMessageDialog(this, "Jumlah restok harus lebih dari 0.");
+                    return;
+                }
                 if(new MenuDAO().addStok(idMenu, add)) {
                     loadMenuAdmin(); 
                 }
-            } catch (Exception x) {}
+            } catch (Exception x) {
+                JOptionPane.showMessageDialog(this, "Jumlah restok tidak valid.");
+            }
         }
     }
     
@@ -485,11 +656,17 @@ public class DashboardPanel extends JPanel {
         String input = JOptionPane.showInputDialog(this, "Harga Dasar TERBARU untuk [" + nama + "]:");
         if(input != null && !input.isEmpty()) {
             try {
-                double harga = Double.parseDouble(input);
+                double harga = parseMoney(input);
+                if (harga <= 0) {
+                    JOptionPane.showMessageDialog(this, "Harga harus lebih dari 0.");
+                    return;
+                }
                 if(new MenuDAO().updateHarga(idMenu, harga)) {
                     loadMenuAdmin(); 
                 }
-            } catch (Exception x) {}
+            } catch (Exception x) {
+                JOptionPane.showMessageDialog(this, "Harga tidak valid.");
+            }
         }
     }
 }

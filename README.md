@@ -1,116 +1,230 @@
-<h1 align="center">🌙 Lunacaffe POS System</h1>
+# LunaCaffe Point of Sales System
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Java-11%2B-orange?style=flat-square&logo=java" alt="Java Version">
-  <img src="https://img.shields.io/badge/GUI-Swing%20FlatLaf-blue?style=flat-square" alt="GUI Mode">
-  <img src="https://img.shields.io/badge/Database-SQLite-0f80cc?style=flat-square&logo=sqlite" alt="SQLite">
-  <img src="https://img.shields.io/badge/Architecture-MVC%20Pattern-brightgreen?style=flat-square" alt="MVC">
-  <img src="https://img.shields.io/badge/Course-PBO%20OOP-purple?style=flat-square" alt="PBO">
-</p>
+## Dokumentasi Akademik Tugas Pemrograman Berorientasi Objek
 
-## 📖 Ringkasan Proyek
-**Lunacaffe Point of Sales (POS)** adalah aplikasi kasir *desktop* cerdas berbasis Java, dikembangkan untuk mendigitalisasi operasional transaksi sebuah kafe/restoran modern. Sistem ini memiliki peran ganda (*Dual Interface*): 
-1. **Kiosk Area** (*Self-Service*) di layar depan bagi pelanggan untuk memesan secara mandiri.
-2. **Dashboard Internal** di balik meja khusus para pegawai (Kasir & Admin).
+LunaCaffe POS adalah aplikasi desktop berbasis Java Swing yang dikembangkan sebagai studi kasus penerapan Pemrograman Berorientasi Objek pada sistem operasional kafe. Sistem ini mendukung pemesanan mandiri pelanggan, pemantauan antrean pesanan, pengelolaan produk, pengelolaan akun pegawai, dan rekapitulasi transaksi harian dengan penyimpanan lokal SQLite.
 
-> 💡 **Dokumentasi Lengkap:** Untuk panduan penggunaan sistem yang interaktif dan detail, silakan buka **[`index.html`](https://firgiawann.github.io/lunacaffe)** melalui *browser* Anda!
+## Identitas Proyek
 
----
+| Komponen | Keterangan |
+| --- | --- |
+| Nama Sistem | LunaCaffe Point of Sales System |
+| Jenis Aplikasi | Desktop POS berbasis Java |
+| Mata Kuliah | Pemrograman Berorientasi Objek |
+| Bahasa Pemrograman | Java |
+| Antarmuka | Java Swing dengan FlatLaf |
+| Database | SQLite |
+| Arsitektur | MVC dan DAO |
+| File Dokumentasi | `index.html` |
+| File Demo Visual | `demo.html` |
 
-## 🚀 Fitur & Dokumentasi Sistem
-Aplikasi ini dikembangkan dengan membagi wewenang/role berbasis **RBAC (Role-Based Access Control)** pada tiga entitas nyata:
+## Tim Pengembang
 
-- **Modul Pelanggan (Guest) / Tanpa Login:** Mampu mencari (*live search*) kopi dari katalog, *filter* kategori (*Hot/Cold/Snack*), menggunakan fitur keranjang otomatis (dengan pengecekan *real-time* sisa gudang), dan melakukan pembayaran lalu merilis digital struk QR antrean.
-- **Modul Kasir (Front-Office) / Akun `kasir1:123`:** Memantau letak pergerakan pesanan *(Live Queue)*, menandai penyelesaian order, dan membimbing sirkulasi menu tanpa merubah infrastruktur master data.
-- **Modul Super Admin / Akun `admin:123`:** Menguasai tata kelola mutlak. Meliputi C-R-U-D harga dan penambahan stok Gudang Menu, mendaftarkan dan memblokir akun Kasir, hingga me-*generate* laporan Keuangan CSV harian secara instan.
+- Firgiawan Listianto
+- Muh. Nabil Makarimsyah
+- Jumaria
+- Kelvin Surya Putra
 
----
+## Abstrak
 
-## 🛠️ Arsitektur & Teknologi
-Proyek ini dibangun tidak dengan tumpukan kode yang kusam, melainkan dipisahkan lewat Pola Arsitektur **Model-View-Controller (MVC)**:
-* **Model**: Struktur OOP (*Java Class*) pencetak objek Aktor maupun Inventaris.
-* **View**: Implementasi Front-end Desktop menggunakan **Java Swing** dengan injeksi tema modern dari *library* **FlatLaf**.
-* **Controller**: Logika jembatan dan lapisan DAO (*Data Access Object*) pengirim statemen relasional.
-* **Database**: **SQLite** V.3 yang langsung tertanam otomatis tanpa *server hosting* (Schema: `users`, `menus`, `orders`, `order_details`).
+LunaCaffe POS dirancang untuk membantu proses transaksi pada kafe melalui dua area utama, yaitu antarmuka pelanggan dan dashboard pegawai. Pelanggan dapat memilih menu, mengelola keranjang, melakukan checkout, dan memperoleh nomor antrean. Kasir dapat memantau pesanan serta memperbarui status pesanan. Admin dapat mengelola produk, stok, harga, gambar menu, akun pegawai, dan laporan transaksi. Sistem ini dibuat dengan pendekatan objek agar setiap entitas bisnis direpresentasikan secara jelas dalam class Java.
 
----
+## Latar Belakang
 
-## 🎓 Pemenuhan Tugas Akademik (PBO)
+Operasional kafe membutuhkan pengelolaan data menu, stok, pesanan, dan transaksi secara konsisten. Pencatatan manual berpotensi menyebabkan kesalahan pada perhitungan total, stok, maupun status pesanan. Oleh karena itu, proyek ini menggunakan studi kasus POS untuk menunjukkan bagaimana konsep PBO dapat diterapkan pada aplikasi yang memiliki kebutuhan nyata.
 
-Bagian ini didedikasikan untuk menjawab pertanyaan pengujian Mata Kuliah Pemrograman Berorientasi Objek.
+## Tujuan
 
-### ❓ 3 Pertanyaan Dasar
-1. **Apa Aplikasi yang Dibuat?**
-   Aplikasi kasir kafe (*Point of Sales*) cerdas dengan fitur pemesanan mandiri (*self-service kiosk*) bagi pelanggan, serta fitur manajemen pemrosesan order dan inventaris bagi pegawai.
-2. **Siapa Saja User/Aktornya?**
-   Terdapat 3 ruang lingkup aktor: **Pelanggan** (tanpa batas *login* dan melihat katalog depan), **Kasir** (memantau pergerakan order dan kasir), dan **Admin** (spesialis kontrol aset dan pendaftaran karyawan).
-3. **Bagaimana Struktur & Abstrak Kelasnya?**
-   - **Induk Tertinggi (`abstract`):** `Aktor` (Memaksa lahirnya *method* `masukSistem()`).
-   - **Keturunan Pertama:** `Pembeli` (Bebas gerbang) & `Pegawai` (Ter-enkapsulasi sandi gembok rahasia).
-   - **Keturunan Kedua:** Berlanjut dari `Pegawai` menjadi `Kasir` dan `Admin` (Dengan pewarisan *Inheritance* solid).
+1. Membangun aplikasi POS desktop yang dapat digunakan secara lokal.
+2. Menerapkan konsep class, object, encapsulation, inheritance, polymorphism, dan abstraction.
+3. Memisahkan tanggung jawab program melalui model, view, DAO, dan utility.
+4. Menggunakan SQLite sebagai penyimpanan data transaksi dan master data.
+5. Menyediakan dokumentasi akademik yang menjelaskan rancangan dan implementasi sistem.
 
-### ✅ Pembuktian 6 Pilar Utama (OOP Principles)
-Sistem ini mematuhi standar *Object-Oriented Programming* 100%:
-* **1. Class (Cetak Biru):** Pembentukan landasan tak terlihat seperti `class Menu`.
-* **2. Object (Wujud Nyata):** Instansiasi di alam memori, contoh: `new Pesanan()`.
-* **3. Encapsulation (Enkapsulasi Privasi):** Variabel `private stok` yang haram disentuh dari luar kecuali lewat jalan modifikasi formal `setStok()`.
-* **4. Inheritance (Pewarisan Gen):** `class Kasir extends Pegawai`, secara otonom meminjam identitas atribut *username* bapaknya tanpa duplikasi tata kodingan.
-* **5. Polymorphism (Banyak Wujud Berbeda):** Peniupan *Overriding* pada rutinitas `masukSistem()`. Aktor pelanggan masuk ke kasir; Aktor pegawai dicegat di kotak pengecekan sandi.
-* **6. Abstraction (Kewajiban Mutlak):** `abstract class Aktor` dipatenkan agar sistem Java menolak wujud "Aktor siluman", mengharuskan ia hanya berevolusi menjadi wujud kongkrit entitas Pegawai atau Pelanggan.
+## Ruang Lingkup Sistem
 
----
+### Modul Pelanggan
 
-## 💻 Panduan Implementasi & Teknis Instalasi (Local Deployment)
+- Menampilkan katalog produk dengan gambar lokal.
+- Menyediakan pencarian menu secara langsung.
+- Menyediakan filter kategori menu.
+- Menyediakan pengurutan berdasarkan nama dan harga.
+- Mengelola keranjang dengan tombol tambah, kurang, dan hapus item.
+- Melakukan validasi stok sebelum checkout.
+- Menghasilkan struk dan nomor antrean.
 
-Proyek ini dibangun di atas infrastruktur **Maven**. Oleh karena itu, semua *dependency* (seperti FlatLaf UI & relasi SQLite-JDBC) akan diunduh secara otomatis dari *repository* pusat. Berikut adalah langkah teknis pengoperasiannya (*running*) ke dalam berbagai lingkungan IDE:
+### Modul Kasir
 
-### Persyaratan Awal (Prerequisites)
-- **Java JDK (11 atau 17+)** telah ter-*install* dan terdaftar di *Environment Variables* (Path) OS Windows/Linux Anda.
-- **Apache Maven** (Opsional jika IDE Anda sudah membawanya secara *built-in*).
+- Login menggunakan akun pegawai.
+- Melihat daftar pesanan masuk.
+- Menandai pesanan sebagai selesai.
+- Mengakses rekapitulasi harian sesuai kebutuhan operasional.
 
----
+### Modul Admin
 
-### Opsi A: Menjalankan di Lingkungan Apache NetBeans 
-*NetBeans sangat bersahabat dengan Maven dan pengembangan antarmuka GUI Swing secara umum.*
-1. Buka NetBeans, pilih menu navigasi ujung kiri **`File` > `Open Project...`**
-2. Cari dan pilih folder repositori ini (Biasanya ditandai dengan ikon "ma" biru kecil yang berarti Maven Project).
-3. Biarkan *loading bar* yang ada di sisi bawah menyelesaikan tugasnya. NetBeans secara otomatis akan membaca berkas `pom.xml` dan mengunduh dependensi yang diperlukan.
-4. Klik kanan pada ikon Folder Proyek (`LunaCaffe`), lalu tekan instruksi **`Clean and Build`**.
-5. Rentangkan pundi folder *Source Packages* dan cari *file*: `src/main/java/com/lunacaffe/Main.java`.
-6. Klik kanan persis pada *file* Main tersebut, lalu lontarkan pelatuk **`Run File`** *(Shortcut: Shift + F6)*.
+- Menambah produk menu.
+- Mengubah data produk.
+- Menghapus produk.
+- Mengubah harga dan stok produk.
+- Menentukan gambar produk dari resource lokal atau path file.
+- Mengatur label produk `NEW` dan `BEST`.
+- Menambah dan menghapus akun pegawai.
+- Mengekspor rekap transaksi harian ke CSV.
 
-### Opsi B: Menjalankan di Lingkungan Visual Studio Code (VS Code)
-1. Buka folder *root* proyek (`LunaCaffe`) di VS Code.
-2. Pastikan VS Code Anda sudah dipasangi pelengkap Ekstensi wajib dari Microsoft:
-   - **Extension Pack for Java** (`vscjava.vscode-java-pack`)
-3. Begitu folder dibuka, Java Extension akan bereaksi memindai `pom.xml` secara otomatis (Perhatikan ikon memuat "Java" yang berjalan di pojok kanan bawah terminal).
-4. Sorot tab *Explorer*, carilah *file* `/src/main/java/com/lunacaffe/Main.java`.
-5. Tepat melayang di bagian atas deklarasi `public static void main(...)`, baris teks interaktif berwarna abu-abu/biru bertuliskan `▶ Run` atau `Debug` akan unjuk gigi. 
-6. Silakan klik teks interaktif **`▶ Run`** tersebut.
+## Akun Uji
 
-### Opsi C: Eksekusi Lewat Terminal Inti (Command-Prompt / Bash)
-Bila ingin merasakan pengalaman terminal secara murni, buka *Command Prompt* atau *Terminal* VS code Anda, arahkan direktorinya `cd` ke dalam *root* (tempat `pom.xml` berada) lalu letuskan komando prompt maven ini:
+| Role | Username | Password | Hak Akses |
+| --- | --- | --- | --- |
+| Admin | `admin` | `123` | Semua fitur dashboard |
+| Kasir | `kasir1` | `123` | Pesanan live dan rekap |
+| Pelanggan | Tidak perlu login | Tidak perlu login | Katalog, keranjang, checkout |
 
-> **1. Menyusun Tumpukan Kode dan Unduh Dependensi POM:**
-```bash
-mvn clean compile
+## Arsitektur Sistem
+
+Sistem menggunakan pendekatan MVC dengan lapisan DAO untuk menjaga pemisahan tanggung jawab.
+
+| Lapisan | File Utama | Tanggung Jawab |
+| --- | --- | --- |
+| Model | `Menu`, `Pesanan`, `DetailPesanan`, `Aktor`, `Pegawai`, `Admin`, `Kasir`, `Pembeli` | Merepresentasikan objek domain |
+| View | `MainFrame`, `CustomerPanel`, `LoginPanel`, `DashboardPanel` | Menampilkan antarmuka pengguna |
+| DAO | `MenuDAO`, `OrderDAO`, `UserDAO` | Mengakses dan memanipulasi data SQLite |
+| Utility | `DatabaseConnection`, `DatabaseSeeder`, `SessionManager` | Koneksi database, data awal, dan sesi login |
+
+## Struktur Direktori
+
+```text
+LunaCaffe
+├── src/main/java/com/lunacaffe
+│   ├── Main.java
+│   ├── dao
+│   ├── model
+│   ├── util
+│   └── view
+├── src/main/resources/images/menu
+├── lunacaffe.db
+├── pom.xml
+├── index.html
+├── demo.html
+└── README.md
 ```
 
-> **2. Menjalankan Main-Class Aplikasinya:**
+## Desain Database
+
+Database menggunakan file lokal `lunacaffe.db`.
+
+| Tabel | Fungsi | Kolom Penting |
+| --- | --- | --- |
+| `users` | Menyimpan akun pegawai | `id`, `nama`, `username`, `password`, `role` |
+| `menus` | Menyimpan data produk menu | `id`, `nama`, `kategori`, `harga`, `stok`, `image_path`, `is_new`, `is_bestseller` |
+| `orders` | Menyimpan transaksi utama | `id`, `nama_pelanggan`, `total_harga`, `status`, `created_at` |
+| `order_details` | Menyimpan item pada transaksi | `order_id`, `menu_id`, `qty`, `subtotal` |
+
+Database dapat diakses melalui panel admin aplikasi. Untuk pemeriksaan manual, gunakan DB Browser for SQLite dan buka file `lunacaffe.db`.
+
+## Penerapan Konsep PBO
+
+### Class dan Object
+
+Class digunakan sebagai cetak biru data, sedangkan object adalah instansiasi yang digunakan saat program berjalan.
+
+```java
+Menu menu = new Menu(id, nama, kategori, harga, stok, imagePath, isNew, isBest);
+Pesanan pesanan = new Pesanan("TEMP", "Guest", "");
+```
+
+### Encapsulation
+
+Atribut penting pada model dibuat private dan diakses melalui method agar perubahan data lebih terkendali.
+
+```java
+private double harga;
+
+public double getHarga() {
+    return harga;
+}
+```
+
+### Inheritance
+
+Class `Admin` dan `Kasir` mewarisi atribut serta perilaku umum dari `Pegawai`.
+
+```java
+public class Admin extends Pegawai {
+    public Admin(String nama, String username, String password) {
+        super(null, nama, username, password, "admin");
+    }
+}
+```
+
+### Abstraction
+
+Class `Aktor` menjadi bentuk umum dari aktor sistem dan menetapkan kontrak method yang harus diimplementasikan oleh turunannya.
+
+```java
+public abstract class Aktor {
+    public abstract void masukSistem();
+}
+```
+
+### Polymorphism
+
+Method yang sama dapat memiliki implementasi berbeda pada class turunan, misalnya cara masuk sistem antara pelanggan dan pegawai.
+
+## Alur Penggunaan
+
+### Alur Pelanggan
+
+1. Pelanggan membuka tab antarmuka pelanggan.
+2. Pelanggan memilih menu dari katalog.
+3. Pelanggan mengatur jumlah item di keranjang.
+4. Sistem menghitung subtotal dan total.
+5. Pelanggan melakukan checkout.
+6. Sistem menyimpan pesanan dan mengurangi stok produk.
+7. Sistem menampilkan struk dan nomor antrean.
+
+### Alur Pegawai
+
+1. Pegawai membuka tab sistem kasir dan admin.
+2. Pegawai login menggunakan akun yang tersedia.
+3. Kasir memantau pesanan masuk.
+4. Kasir menandai pesanan selesai.
+5. Admin dapat mengelola produk, akun, dan rekap transaksi.
+
+## Cara Menjalankan
+
+### Prasyarat
+
+- JDK 11 atau versi lebih baru.
+- Apache Maven atau IDE yang mendukung Maven.
+- Koneksi internet pertama kali untuk mengunduh dependensi Maven jika belum tersedia.
+
+### Menjalankan dengan Maven
+
 ```bash
+mvn clean compile
 mvn exec:java -Dexec.mainClass="com.lunacaffe.Main"
 ```
 
-> ⚙️ **Catatan Penutup Otomasi Sistem Data!**  
-> *Setelah Java berhasil dipicu memakai Opsi A, B, maupun C di atas, modul backend `DatabaseConnection.java` secara independen akan menembakkan file benih bernama **`lunacaffe.db`** ke jantung folder tempat Anda berdiri saat ini. Data dasar Menu dan Akun Kasir juga ditanam paksa ke dalamnya.*
+### Menjalankan dari IDE
 
----
+1. Buka folder proyek sebagai Maven Project.
+2. Tunggu IDE membaca `pom.xml`.
+3. Jalankan file `src/main/java/com/lunacaffe/Main.java`.
+4. Database dan data awal akan disiapkan otomatis saat aplikasi berjalan.
 
-## 👥 Tim Pembangun (Kelompok 3)
-Dikembangkan penuh dedikasi oleh:
-- **Firgiawan Listianto** 
-- **Muh. Nabil Makarimsyah** 
-- **Jumaria** 
-- **Kelvin Surya Putra** 
+## Dependensi
 
-> *"Kualitas dari software tidak dinilai dari kerumitannya dibaca orang, melainkan bagaimana masalah besar mampu diurai ke rancang susunan objek-objek kecil."*
+| Dependensi | Versi | Fungsi |
+| --- | --- | --- |
+| FlatLaf | 3.2.1 | Tampilan modern pada Java Swing |
+| SQLite JDBC | 3.42.0.0 | Koneksi Java ke SQLite |
+
+## Dokumentasi dan Demo
+
+- Dokumentasi akademik: buka `index.html`.
+- Demo visual berbasis web: buka `demo.html`.
+- File lama `demo_lunacaffe.html` tetap tersedia dan diarahkan ke `demo.html`.
+
+## Kesimpulan
+
+LunaCaffe POS menunjukkan penerapan PBO pada aplikasi desktop dengan studi kasus yang relevan. Sistem ini tidak hanya menampilkan konsep dasar class dan object, tetapi juga memanfaatkan inheritance, encapsulation, abstraction, polymorphism, MVC, DAO, serta database lokal. Dengan fitur katalog, checkout, antrean pesanan, manajemen produk, manajemen akun, dan rekap CSV, proyek ini dapat digunakan sebagai contoh implementasi PBO yang terstruktur dan dapat dikembangkan lebih lanjut.
